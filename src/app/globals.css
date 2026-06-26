@@ -1,26 +1,159 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   UniSenate — Design System Tokens (Calendly-style)
+   Tokens map directly to Tailwind v4 utility classes via @theme.
+   Reference: SKILLS/DESIGN.md
+   ============================================================ */
+
+@theme {
+  /* Colors */
+  --color-midnight-navy: #0b3558;
+  --color-signal-blue: #006bff;
+  --color-slate-blue: #476788;
+  --color-carbon: #0a0a0a;
+  --color-paper: #ffffff;
+  --color-mist: #f8f9fb;
+  --color-fog: #e7edf6;
+  --color-mist-border: #d4e0ed;
+  --color-silver: #e6e6e6;
+  --color-steel-blue: #a6bbd1;
+  --color-info-blue: #004eba;
+  --color-magenta-bloom: #e55cff;
+  --color-ultraviolet: #8247f5;
+  --color-amber-spark: #ffa600;
+  --color-cyan-pop: #0099ff;
+
+  /* Semantic state colors — kept blue-tinted and on-brand */
+  --color-success: #047a5b;
+  --color-success-soft: #d6f1e8;
+  --color-warning: #b54708;
+  --color-warning-soft: #fef0e7;
+  --color-danger: #b42318;
+  --color-danger-soft: #fee4e2;
+  --color-pending: #476788;
+  --color-pending-soft: #e7edf6;
+
+  /* Font families */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Type scale */
+  --text-micro: 12px;
+  --text-caption: 14px;
+  --text-body-sm: 16px;
+  --text-body: 18px;
+  --text-body-lg: 20px;
+  --text-subheading: 24px;
+  --text-heading-sm: 28px;
+  --text-heading: 38px;
+  --text-heading-lg: 50px;
+  --text-display: 68px;
+
+  /* Spacing scale (8px base) */
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+  --spacing-72: 72px;
+  --spacing-96: 96px;
+
+  /* Border radii */
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows — blue-tinted, multi-layer */
+  --shadow-sm: 0px 4px 5px 0px rgba(71, 103, 136, 0.04),
+    0px 4px 10px 0px rgba(71, 103, 136, 0.03),
+    0px 10px 20px 0px rgba(71, 103, 136, 0.05);
+  --shadow-md: 0px 4px 5px 0px rgba(71, 103, 136, 0.04),
+    0px 8px 15px 0px rgba(71, 103, 136, 0.03),
+    0px 30px 50px 0px rgba(71, 103, 136, 0.08);
+  --shadow-lg: 0px 4px 5px 0px rgba(71, 103, 136, 0.04),
+    0px 8px 15px 0px rgba(71, 103, 136, 0.03),
+    0px 15px 30px 0px rgba(71, 103, 136, 0.06);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base */
+html,
+body {
+  height: 100%;
+  background-color: var(--color-mist);
+  color: var(--color-carbon);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-feature-settings: "cv11", "ss01";
+}
+
+* {
+  border-color: var(--color-mist-border);
+}
+
+/* Custom scrollbar — subtle, on-brand */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-fog);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-steel-blue);
+}
+
+/* Focus ring — signal blue, accessible */
+:focus-visible {
+  outline: 2px solid var(--color-signal-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-fog);
+  color: var(--color-midnight-navy);
+}
+
+/* Utility helpers used in design system */
+@layer utilities {
+  .shadow-card {
+    box-shadow: var(--shadow-sm);
+  }
+  .shadow-card-hover {
+    box-shadow: var(--shadow-md);
+  }
+  .shadow-button {
+    box-shadow: var(--shadow-sm);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  /* Decorative gradient backdrop — atmospheric only */
+  .gradient-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+  }
 }
