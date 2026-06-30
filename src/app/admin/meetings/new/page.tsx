@@ -1,8 +1,6 @@
 "use client";
 
-import * as React from "react";
 import { useActionState } from "react";
-import { useRouter } from "next/navigation";
 import { createMeetingAction } from "@/lib/meetings/actions";
 import { Card, CardContent, Button, Input, Textarea } from "@/components/ui";
 import { useFormStatus } from "react-dom";
@@ -19,15 +17,7 @@ function SubmitButton() {
 }
 
 export default function NewMeetingPage() {
-  const router = useRouter();
   const [state, formAction] = useActionState(createMeetingAction, null);
-
-  // Redirect on success.
-  React.useEffect(() => {
-    if (state?.ok && state.meetingId) {
-      router.push(`/admin/meetings/${state.meetingId}`);
-    }
-  }, [state, router]);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 py-8">
@@ -44,11 +34,43 @@ export default function NewMeetingPage() {
             {state?.error && (
               <p className="rounded-md bg-danger-soft px-3 py-2 text-caption text-danger">{state.error}</p>
             )}
-            <Input label="Meeting title" name="title" placeholder="e.g. May 2026 Senate Session" required />
-            <Textarea label="Description (optional)" name="description" placeholder="Brief description…" rows={3} />
-            <Input label="Location or video link (optional)" name="location" placeholder="Room 101 or https://meet…" />
-            <Input label="Date & time" name="scheduledAt" type="datetime-local" required />
-            <Input label="Duration (minutes)" name="durationMin" type="number" min={5} max={480} defaultValue={60} required />
+            <Input
+              label="Meeting title"
+              name="title"
+              placeholder="e.g. May 2026 Senate Session"
+              required
+              error={state?.errors?.title?.[0]}
+            />
+            <Textarea
+              label="Description (optional)"
+              name="description"
+              placeholder="Brief description…"
+              rows={3}
+              error={state?.errors?.description?.[0]}
+            />
+            <Input
+              label="Location or video link (optional)"
+              name="location"
+              placeholder="Room 101 or https://meet…"
+              error={state?.errors?.location?.[0]}
+            />
+            <Input
+              label="Date & time"
+              name="scheduledAt"
+              type="datetime-local"
+              required
+              error={state?.errors?.scheduledAt?.[0]}
+            />
+            <Input
+              label="Duration (minutes)"
+              name="durationMin"
+              type="number"
+              min={5}
+              max={480}
+              defaultValue={60}
+              required
+              error={state?.errors?.durationMin?.[0]}
+            />
             <div className="pt-2">
               <SubmitButton />
             </div>

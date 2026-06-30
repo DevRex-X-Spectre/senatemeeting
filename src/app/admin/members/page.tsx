@@ -1,57 +1,79 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/guards";
-import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, Button, Badge, Avatar, EmptyState } from "@/components/ui";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { Card, CardContent, Badge, Avatar, EmptyState } from "@/components/ui";
 import { formatDateTime } from "@/lib/utils/dates";
 import { Users } from "lucide-react";
-import { ApproveButton, SuspendButton } from "@/components/admin/members/ApprovalActions";
+import { ApproveButton, RejectButton, SuspendButton } from "@/components/admin/members/ApprovalActions";
 
 export const metadata: Metadata = { title: "Members" };
 
+type MemberRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  avatar_url?: string | null;
+  status: "pending" | "active" | "suspended";
+  role: string;
+  created_at: string;
+  approved_at?: string | null;
+  approved_by?: string | null;
+};
+
 export default async function MembersPage() {
   await requireAdmin();
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
 
-  const { data: profilesRaw } = await supabase
+  const { data: profilesRaw, error: profilesError } = await adminClient
     .from("profiles")
-    .select("*, approved_by:profiles!profiles_approved_by_fkey(full_name)")
+    .select("*")
     .order("created_at", { ascending: false });
 
-  const profiles: any[] = (profilesRaw ?? []) as any[];
+  if (profilesError) {
+    throw new Error(`Could not load member registrations: ${profilesError.message}`);
+  }
+
+  const profiles = (profilesRaw ?? []) as MemberRow[];
   const pending = profiles.filter((p) => p.status === "pending");
   const active = profiles.filter((p) => p.status === "active");
   const suspended = profiles.filter((p) => p.status === "suspended");
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 py-8">
-      <div>
-        <h1 className="text-heading font-bold text-midnight-navy">Members</h1>
-        <p className="mt-1 text-[15px] text-slate-blue">
-          Manage senate member accounts and approvals.
+    <div className="mx-auto max-w-4xl space-y-6 py-6 sm:space-y-8 sm:py-8">
+      <div className="space-y-2">
+        <h1 className="text-[32px] font-bold leading-[1.14] tracking-[-0.025em] text-graphite sm:text-[40px]">
+          Members
+        </h1>
+        <p className="max-w-2xl text-[16px] leading-[1.5] text-steel">
+          Review new accounts, manage active members, and handle suspensions.
         </p>
       </div>
 
-      {/* Pending */}
-      <section>
-        <h2 className="mb-3 text-subheading font-semibold text-midnight-navy">
+      <section className="space-y-4">
+        <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">
           Pending approval ({pending.length})
         </h2>
         {pending.length === 0 ? (
-          <p className="text-caption text-slate-blue">No pending members.</p>
+          <p className="text-[14px] leading-[1.43] text-steel">No pending members.</p>
         ) : (
           <div className="flex flex-col gap-3">
-            {pending.map((p: any) => (
-              <Card key={p.id}>
-                <CardContent className="flex items-center justify-between gap-4 py-4">
+            {pending.map((p) => (
+              <Card key={p.id} className="border-l-4 border-l-warning/70">
+                <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
                     <Avatar name={p.full_name} src={p.avatar_url} />
-                    <div>
-                      <p className="text-[14px] font-medium text-midnight-navy">{p.full_name}</p>
-                      <p className="text-caption text-slate-blue">{p.email}</p>
-                      <p className="text-caption text-steel-blue">Registered {formatDateTime(p.created_at)}</p>
+                    <div className="space-y-0.5">
+                      <p className="text-[16px] font-medium text-graphite">{p.full_name}</p>
+                      <p className="text-[14px] leading-[1.43] text-steel">{p.email}</p>
+                      <p className="text-[14px] leading-[1.43] text-steel">
+                        Registered {formatDateTime(p.created_at)}
+                      </p>
                     </div>
                   </div>
-                  <ApproveButton userId={p.id} />
+                  <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+                    <ApproveButton userId={p.id} />
+                    <RejectButton userId={p.id} />
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -59,35 +81,33 @@ export default async function MembersPage() {
         )}
       </section>
 
-      {/* Active */}
-      <section>
-        <h2 className="mb-3 text-subheading font-semibold text-midnight-navy">
+      <section className="space-y-4">
+        <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">
           Active members ({active.length})
         </h2>
         {active.length === 0 ? (
           <EmptyState icon={<Users className="size-6" />} title="No active members yet" />
         ) : (
           <div className="flex flex-col gap-3">
-            {active.map((p: any) => (
-              <Card key={p.id}>
-                <CardContent className="flex items-center justify-between gap-4 py-4">
+            {active.map((p) => (
+              <Card key={p.id} className="transition-colors duration-150 hover:border-graphite/20">
+                <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
                     <Avatar name={p.full_name} src={p.avatar_url} />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-[14px] font-medium text-midnight-navy">{p.full_name}</p>
-                        {p.role === "admin" && <Badge tone="info" size="sm">Admin</Badge>}
+                    <div className="space-y-0.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-[16px] font-medium text-graphite">{p.full_name}</p>
+                        {p.role === "admin" ? <Badge tone="info" size="sm">Admin</Badge> : null}
                       </div>
-                      <p className="text-caption text-slate-blue">{p.email}</p>
+                      <p className="text-[14px] leading-[1.43] text-steel">{p.email}</p>
                       {p.approved_at ? (
-                        <p className="text-caption text-steel-blue">
+                        <p className="text-[14px] leading-[1.43] text-steel">
                           Approved {formatDateTime(p.approved_at)}
-                          {p.approved_by?.full_name ? ` by ${p.approved_by.full_name}` : ""}
                         </p>
                       ) : null}
                     </div>
                   </div>
-                  {p.role !== "admin" && <SuspendButton userId={p.id} />}
+                  {p.role !== "admin" ? <SuspendButton userId={p.id} /> : null}
                 </CardContent>
               </Card>
             ))}
@@ -95,21 +115,20 @@ export default async function MembersPage() {
         )}
       </section>
 
-      {/* Suspended */}
-      {suspended.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-subheading font-semibold text-midnight-navy">
-            Suspended ({suspended.length})
+      {suspended.length > 0 ? (
+        <section className="space-y-4">
+          <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">
+            Rejected / suspended ({suspended.length})
           </h2>
           <div className="flex flex-col gap-3">
-            {suspended.map((p: any) => (
-              <Card key={p.id}>
-                <CardContent className="flex items-center justify-between gap-4 py-4">
+            {suspended.map((p) => (
+              <Card key={p.id} className="border-l-4 border-l-danger/60">
+                <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
                     <Avatar name={p.full_name} src={p.avatar_url} />
-                    <div>
-                      <p className="text-[14px] font-medium text-midnight-navy">{p.full_name}</p>
-                      <p className="text-caption text-slate-blue">{p.email}</p>
+                    <div className="space-y-0.5">
+                      <p className="text-[16px] font-medium text-graphite">{p.full_name}</p>
+                      <p className="text-[14px] leading-[1.43] text-steel">{p.email}</p>
                     </div>
                   </div>
                   <ApproveButton userId={p.id} label="Reactivate" />
@@ -118,7 +137,7 @@ export default async function MembersPage() {
             ))}
           </div>
         </section>
-      )}
+      ) : null}
     </div>
   );
 }

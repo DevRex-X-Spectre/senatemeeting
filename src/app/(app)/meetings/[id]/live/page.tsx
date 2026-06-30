@@ -80,7 +80,7 @@ export default async function LiveSessionPage({
         </CardContent>
       </Card>
 
-      {/* Agenda — active item highlighted */}
+      {/* Agenda, active item highlighted */}
       <section>
         <h2 className="mb-3 text-subheading font-semibold text-midnight-navy">Agenda</h2>
         <div className="flex flex-col gap-2">
@@ -117,7 +117,7 @@ export default async function LiveSessionPage({
       {currentItem ? (
         <section>
           <h2 className="mb-3 text-subheading font-semibold text-midnight-navy">
-            Motions — {currentItem.title}
+            Motions, {currentItem.title}
           </h2>
           <div className="flex flex-col gap-4">
             {/* Raise a motion */}

@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
 import { Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { RegistrationSuccessModal } from "@/components/auth/RegistrationSuccessModal";
 
 export const metadata: Metadata = { title: "Pending approval" };
 
-export default function PendingApprovalPage() {
+interface PendingApprovalPageProps {
+  searchParams?: Promise<{
+    registered?: string;
+  }>;
+}
+
+export default async function PendingApprovalPage({ searchParams }: PendingApprovalPageProps) {
+  const params = await searchParams;
+  const showRegistrationModal = params?.registered === "1";
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-mist px-4">
       <Card padding="lg" className="max-w-sm text-center">
@@ -21,6 +31,7 @@ export default function PendingApprovalPage() {
           </p>
         </CardContent>
       </Card>
+      <RegistrationSuccessModal open={showRegistrationModal} />
     </div>
   );
 }

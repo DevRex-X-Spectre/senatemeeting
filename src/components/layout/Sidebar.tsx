@@ -9,8 +9,6 @@ import {
   History,
   Bell,
   User,
-  ChevronLeft,
-  ChevronRight,
   University,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
@@ -30,118 +28,114 @@ const ADMIN_ITEMS = [
   { href: "/admin/members", label: "Members", icon: University },
 ];
 
+const MOBILE_NAV_ITEMS = [
+  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/meetings", label: "Meetings", icon: CalendarDays },
+  { href: "/history", label: "History", icon: History },
+  { href: "/notifications", label: "Alerts", icon: Bell },
+  { href: "/profile", label: "Profile", icon: User },
+];
+
+const MOBILE_ADMIN_ITEMS = [
+  { href: "/admin", label: "Home", icon: LayoutDashboard },
+  { href: "/admin/meetings", label: "Meetings", icon: CalendarDays },
+  { href: "/admin/members", label: "Members", icon: University },
+  { href: "/profile", label: "Profile", icon: User },
+];
+
 interface SidebarProps {
   profile: Profile;
 }
 
 export function Sidebar({ profile }: SidebarProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = React.useState(false);
-
   const isAdmin = profile.role === "admin";
   const items = isAdmin ? ADMIN_ITEMS : NAV_ITEMS;
+  const mobileItems = isAdmin ? MOBILE_ADMIN_ITEMS : MOBILE_NAV_ITEMS;
 
   return (
     <>
-      {/* Mobile bottom nav */}
       <nav
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-40 flex items-center border-t border-mist-border bg-paper sm:hidden",
-          "h-16 pb-safe",
+          "fixed inset-x-0 bottom-0 z-40 flex items-end border-t border-fog-border bg-pure-white/95 px-2 pt-1 shadow-[0_-10px_30px_rgba(71,103,136,0.08)] backdrop-blur-xl sm:hidden",
+          "min-h-[68px] pb-[max(0.5rem,env(safe-area-inset-bottom))]",
         )}
         aria-label="Mobile navigation"
       >
-        {items.map((item) => {
+        {mobileItems.map((item) => {
           const Icon = item.icon;
-          const active = pathname.startsWith(item.href);
+          const active = isActiveRoute(pathname, item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors",
-                active ? "text-signal-blue" : "text-slate-blue hover:text-midnight-navy",
+                "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-md px-1 py-2 text-[11px] font-semibold leading-none transition-colors duration-150",
+                active
+                  ? "bg-plaster text-graphite"
+                  : "text-steel hover:bg-plaster/70 hover:text-graphite",
               )}
               aria-current={active ? "page" : undefined}
             >
-              <Icon className="size-5" />
-              <span>{item.label}</span>
+              <Icon className={cn("size-5 shrink-0 transition-transform duration-150", active && "scale-105")} />
+              <span className="block max-w-full truncate">{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden sm:flex fixed left-0 top-0 h-full flex-col border-r border-mist-border bg-paper transition-all duration-200",
-          collapsed ? "w-16" : "w-60",
+          "hidden sm:flex fixed left-0 top-0 h-full w-60 flex-col border-r border-fog-border bg-pure-white",
         )}
         aria-label="Navigation"
       >
-        {/* Logo */}
-        <div className={cn(
-          "flex h-16 items-center border-b border-mist-border px-4 shrink-0",
-          collapsed ? "justify-center" : "gap-2.5",
-        )}>
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-midnight-navy text-paper">
+        <div className="flex h-20 items-center gap-3 border-b border-fog-border px-5 shrink-0">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-graphite bg-graphite text-pure-white">
             <University className="size-4" />
           </div>
-          {!collapsed && (
-            <span className="text-[17px] font-bold tracking-tight text-midnight-navy">
-              UniSenate
+          <div className="flex flex-col leading-tight">
+            <span className="text-[17px] font-bold tracking-[-0.025em] text-graphite">UniSenate</span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-steel">
+              Senate operations
             </span>
-          )}
+          </div>
         </div>
 
-        {/* Nav links */}
-        <nav className="flex-1 overflow-y-auto px-2 py-4">
-          <ul className="flex flex-col gap-0.5">
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <ul className="flex flex-col gap-1">
             {items.map((item) => {
               const Icon = item.icon;
-              const active = pathname.startsWith(item.href);
+              const active = isActiveRoute(pathname, item.href);
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2.5 text-[14px] font-medium transition-all duration-150",
-                      collapsed && "justify-center px-0",
+                      "group flex items-center gap-3 rounded-md px-3 py-2.5 text-[14px] font-medium transition-colors duration-150",
                       active
-                        ? "bg-signal-blue/10 text-signal-blue"
-                        : "text-slate-blue hover:bg-fog hover:text-midnight-navy",
+                        ? "bg-plaster text-graphite border border-fog-border"
+                        : "text-steel hover:bg-plaster hover:text-graphite",
                     )}
-                    title={collapsed ? item.label : undefined}
                     aria-current={active ? "page" : undefined}
                   >
-                    <Icon className="size-5 shrink-0" />
-                    {!collapsed && <span>{item.label}</span>}
+                    <Icon className={cn("size-5 shrink-0 transition-transform duration-150", active && "scale-105", "group-hover:scale-105")} />
+                    <span>{item.label}</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
-
-        {/* Collapse toggle */}
-        <div className="border-t border-mist-border px-2 py-3">
-          <button
-            type="button"
-            onClick={() => setCollapsed((c) => !c)}
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] text-slate-blue transition-colors hover:bg-fog hover:text-midnight-navy"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? (
-              <ChevronRight className="size-4" />
-            ) : (
-              <>
-                <ChevronLeft className="size-4" />
-                <span>Collapse</span>
-              </>
-            )}
-          </button>
-        </div>
       </aside>
     </>
   );
+}
+
+function isActiveRoute(pathname: string, href: string) {
+  if (href === "/admin" || href === "/dashboard" || href === "/profile") {
+    return pathname === href;
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
 }

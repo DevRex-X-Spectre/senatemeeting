@@ -12,9 +12,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const reactId = React.useId();
     const inputId = id ?? reactId;
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5 sm:gap-2">
         {label ? (
-          <label htmlFor={inputId} className="text-caption font-medium text-midnight-navy">
+          <label htmlFor={inputId} className="text-[14px] font-medium leading-[1.43] text-graphite">
             {label}
           </label>
         ) : null}
@@ -22,11 +22,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={cn(
-            "h-11 w-full rounded-md border border-mist-border bg-paper px-3 text-[15px] text-carbon",
-            "placeholder:text-steel-blue",
+            "h-11 w-full rounded-md border border-graphite/15 bg-pure-white px-3 text-[16px] text-graphite",
+            "placeholder:text-silver-mist",
             "transition-colors duration-150",
-            "focus:border-signal-blue focus:outline-none focus:ring-2 focus:ring-signal-blue/15",
-            "disabled:bg-fog disabled:text-slate-blue",
+            "focus:border-graphite focus:outline-none focus:ring-2 focus:ring-graphite/10",
+            "disabled:bg-plaster disabled:text-steel",
             error && "border-danger focus:border-danger focus:ring-danger/15",
             className,
           )}
@@ -35,10 +35,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...rest}
         />
         {hint && !error ? (
-          <p id={`${inputId}-desc`} className="text-caption text-slate-blue">{hint}</p>
+          <p id={`${inputId}-desc`} className="text-[14px] leading-[1.43] text-steel">{hint}</p>
         ) : null}
         {error ? (
-          <p id={`${inputId}-desc`} className="text-caption text-danger">{error}</p>
+          <p id={`${inputId}-desc`} className="text-[14px] leading-[1.43] text-danger">{error}</p>
         ) : null}
       </div>
     );

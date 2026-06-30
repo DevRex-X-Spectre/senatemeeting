@@ -40,6 +40,7 @@ export async function getMemberDashboard(profile: Profile): Promise<{
 export async function getAdminDashboard(): Promise<{
   totalMeetings: number;
   activeMembers: number;
+  pendingRegistrations: number;
   avgAttendance: number;
   completionRate: number;
   pendingCarryOvers: number;
@@ -47,13 +48,14 @@ export async function getAdminDashboard(): Promise<{
 }> {
   const supabase = await createClient();
 
-  const [{ count: totalMeetings }, { count: activeMembers }, { data: allMeetings }, { data: unack }] =
+  const [{ count: totalMeetings }, { count: activeMembers }, { count: pendingRegistrations }, { data: allMeetings }, { data: unack }] =
     await Promise.all([
       supabase.from("meetings").select("*", { count: "exact", head: true }).not("status", "eq", "cancelled"),
       supabase.from("profiles").select("*", { count: "exact", head: true }).eq("status", "active"),
+      supabase.from("profiles").select("*", { count: "exact", head: true }).eq("status", "pending"),
       supabase
         .from("meetings")
-        .select("id, status, started_at, ended_at")
+        .select("id, title, scheduled_at, status, started_at, ended_at")
         .not("status", "eq", "cancelled")
         .order("scheduled_at", { ascending: false })
         .limit(50),
@@ -104,6 +106,7 @@ export async function getAdminDashboard(): Promise<{
   return {
     totalMeetings: totalMeetings ?? 0,
     activeMembers: activeMembers ?? 0,
+    pendingRegistrations: pendingRegistrations ?? 0,
     avgAttendance,
     completionRate,
     pendingCarryOvers: carryOvers ?? 0,

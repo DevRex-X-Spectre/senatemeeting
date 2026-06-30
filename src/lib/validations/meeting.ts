@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+const localDateTimeSchema = z
+  .string()
+  .min(1, "Please select a valid date and time.")
+  .refine((value) => !Number.isNaN(new Date(value).getTime()), {
+    message: "Please select a valid date and time.",
+  })
+  .transform((value) => new Date(value).toISOString());
+
 export const createMeetingSchema = z.object({
   title: z
     .string()
@@ -7,7 +15,7 @@ export const createMeetingSchema = z.object({
     .max(200, "Title must be under 200 characters."),
   description: z.string().max(2000, "Description must be under 2000 characters.").optional(),
   location: z.string().max(300, "Location must be under 300 characters.").optional(),
-  scheduledAt: z.string().datetime({ message: "Please select a valid date and time." }),
+  scheduledAt: localDateTimeSchema,
   durationMin: z
     .number()
     .int()
@@ -16,10 +24,7 @@ export const createMeetingSchema = z.object({
 });
 
 export const updateMeetingSchema = createMeetingSchema.partial().extend({
-  scheduledAt: z
-    .string()
-    .datetime({ message: "Please select a valid date and time." })
-    .optional(),
+  scheduledAt: localDateTimeSchema.optional(),
 });
 
 export const carryOverSchema = z.object({

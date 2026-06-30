@@ -136,7 +136,7 @@ export async function openVoteAction(_prev: unknown, formData: FormData) {
           user_id: m.id,
           kind: "vote_opened",
           title: "Vote opened",
-          body: `A motion — "${motion.text.slice(0, 60)}" — is open for voting. Cast your vote now.`,
+          body: `A motion, "${motion.text.slice(0, 60)}", is open for voting. Cast your vote now.`,
           meeting_id: motion.meeting_id,
         })),
       );

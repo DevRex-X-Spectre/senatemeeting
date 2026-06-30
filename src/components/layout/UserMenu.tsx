@@ -26,20 +26,20 @@ export function UserMenu({ profile }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-fog"
+        className="flex items-center gap-2 rounded-md border border-fog-border bg-pure-white px-2 py-1.5 transition-colors hover:bg-plaster"
         aria-label="User menu"
         aria-expanded={open}
       >
         <Avatar name={profile.full_name} src={profile.avatar_url} size="sm" />
         <div className="hidden flex-col items-start lg:flex">
-          <span className="text-[13px] font-medium leading-none text-midnight-navy">
+          <span className="text-[13px] font-medium leading-none text-graphite">
             {profile.full_name}
           </span>
-          <span className="text-[11px] leading-none text-slate-blue capitalize">
+          <span className="text-[11px] leading-none text-steel capitalize">
             {profile.role}
           </span>
         </div>
-        <ChevronDown className={cn("size-4 text-slate-blue transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("size-4 text-steel transition-transform", open && "rotate-180")} />
       </button>
 
       {open ? (
@@ -49,19 +49,19 @@ export function UserMenu({ profile }: UserMenuProps) {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-lg border border-mist-border bg-paper shadow-card-hover">
-            <div className="border-b border-mist-border px-3 py-2.5">
-              <p className="text-[13px] font-medium text-midnight-navy">{profile.full_name}</p>
-              <p className="text-[12px] text-slate-blue">{profile.email}</p>
+          <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-fog-border bg-pure-white">
+            <div className="border-b border-fog-border px-3 py-3">
+              <p className="text-[13px] font-medium text-graphite">{profile.full_name}</p>
+              <p className="text-[12px] text-steel">{profile.email}</p>
             </div>
             <nav className="p-1">
               <button
                 type="button"
                 onClick={() => { setOpen(false); router.push("/profile"); }}
-                className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-[13px] text-slate-blue transition-colors hover:bg-fog hover:text-midnight-navy"
+                className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-[13px] text-steel transition-colors hover:bg-plaster hover:text-graphite"
               >
                 <User className="size-4" />
-                Profile
+                View profile
               </button>
               <button
                 type="button"

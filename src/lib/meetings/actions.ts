@@ -35,7 +35,7 @@ export async function createMeetingAction(_prev: unknown, formData: FormData) {
     .single();
 
   if (error) return { ok: false, error: error.message };
-  return { ok: true, meetingId: (data as any).id };
+  redirect(`/admin/meetings/${(data as any).id}`);
 }
 
 export async function updateMeetingAction(
@@ -157,7 +157,7 @@ export async function startMeetingAction(_prev: unknown, formData: FormData) {
         user_id: m.id,
         kind: "meeting_starting",
         title: "Meeting is live",
-        body: `"${meeting?.title ?? "A meeting"}" has started — check in and join.`,
+        body: `"${meeting?.title ?? "A meeting"}" has started, check in and join.`,
         meeting_id: meetingId,
       })),
     );

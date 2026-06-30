@@ -35,7 +35,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <Sidebar profile={p} />
         <div className="flex min-h-screen flex-1 flex-col sm:ml-60">
           <Topbar profile={p} />
-          <main className="flex-1 px-4 pb-20 sm:px-6 sm:pb-6">
+          <main className="flex-1 px-4 pb-24 pt-4 sm:px-6 sm:pb-6 sm:pt-6">
             {children}
           </main>
         </div>

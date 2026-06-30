@@ -70,13 +70,13 @@ function ToastView({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
   return (
     <div
       className={cn(
-        "pointer-events-auto flex items-start gap-3 rounded-lg border border-mist-border bg-paper p-3 shadow-card-hover",
+        "pointer-events-auto flex items-start gap-3 rounded-xl border border-mist-border/80 bg-paper p-3.5 shadow-card-hover ring-1 ring-white/60 backdrop-blur-xl",
       )}
       role="status"
     >
       <Icon className={cn("size-5 shrink-0", ICON_TONE[toast.variant])} />
       <div className="flex flex-1 flex-col gap-0.5">
-        <p className="text-[14px] font-semibold text-midnight-navy">{toast.title}</p>
+        <p className="text-[14px] font-semibold text-midnight-navy tracking-tight">{toast.title}</p>
         {toast.description ? (
           <p className="text-caption text-slate-blue">{toast.description}</p>
         ) : null}
@@ -84,7 +84,7 @@ function ToastView({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
       <button
         type="button"
         onClick={onDismiss}
-        className="rounded-md p-1 text-slate-blue hover:bg-fog hover:text-midnight-navy"
+        className="rounded-md p-1 text-slate-blue transition-colors hover:bg-fog hover:text-midnight-navy"
         aria-label="Dismiss"
       >
         <X className="size-4" />

@@ -1,10 +1,17 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { loginSchema, registerSchema, updateProfileSchema } from "@/lib/validations/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/types/database";
+
+function authConnectionError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  if (message.includes("fetch failed") || message.includes("Connect Timeout")) {
+    return "Cannot reach Supabase right now. Check your internet connection and try again.";
+  }
+  return message || "Authentication failed. Please try again.";
+}
 
 export async function loginAction(_prev: unknown, formData: FormData) {
   const parsed = loginSchema.safeParse({
@@ -17,10 +24,15 @@ export async function loginAction(_prev: unknown, formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
-    email: parsed.data.email,
-    password: parsed.data.password,
-  });
+  const { error } = await supabase.auth
+    .signInWithPassword({
+      email: parsed.data.email,
+      password: parsed.data.password,
+    })
+    .catch((error: unknown) => ({
+      data: { user: null, session: null },
+      error: new Error(authConnectionError(error)),
+    }));
 
   if (error) {
     return { ok: false, errors: { email: [error.message] } };
@@ -41,19 +53,31 @@ export async function registerAction(_prev: unknown, formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
-    email: parsed.data.email,
-    password: parsed.data.password,
-    options: {
-      data: { full_name: parsed.data.fullName },
-    },
-  });
+  const { data, error } = await supabase.auth
+    .signUp({
+      email: parsed.data.email,
+      password: parsed.data.password,
+      options: {
+        data: { full_name: parsed.data.fullName },
+      },
+    })
+    .catch((error: unknown) => ({
+      data: { user: null, session: null },
+      error: new Error(authConnectionError(error)),
+    }));
 
   if (error) {
     return { ok: false, errors: { email: [error.message] } };
   }
 
-  redirect("/pending-approval");
+  if (data.user) {
+    await notifyAdminsAboutRegistration({
+      fullName: parsed.data.fullName,
+      email: parsed.data.email,
+    });
+  }
+
+  redirect("/pending-approval?registered=1");
 }
 
 export async function logoutAction() {
@@ -91,4 +115,24 @@ export async function updateProfileAction(_prev: unknown, formData: FormData) {
     return { ok: false, error: error.message };
   }
   return { ok: true };
+}
+
+async function notifyAdminsAboutRegistration(member: { fullName: string; email: string }) {
+  const adminClient = createAdminClient();
+  const { data: admins } = await adminClient
+    .from("profiles")
+    .select("id")
+    .eq("role", "admin")
+    .eq("status", "active");
+
+  if (!admins?.length) return;
+
+  await adminClient.from("notifications").insert(
+    admins.map((admin) => ({
+      user_id: admin.id,
+      kind: "approval_pending",
+      title: "New member registration",
+      body: `${member.fullName} (${member.email}) is waiting for approval.`,
+    })),
+  );
 }

@@ -6,11 +6,12 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { registerAction } from "@/lib/auth/actions";
 import { Card, CardContent, CardFooter, Button, Input } from "@/components/ui";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" fullWidth disabled={pending} loading={pending}>
+    <Button type="submit" fullWidth disabled={pending} loading={pending} className="gap-2">
       Create account
     </Button>
   );
@@ -21,14 +22,20 @@ export default function RegisterPage() {
 
   return (
     <>
-      <div className="mb-6 text-center">
-        <h1 className="text-[28px] font-bold text-midnight-navy">Create account</h1>
-        <p className="mt-1.5 text-[15px] text-slate-blue">
-          Register as a senate member. An admin will approve your account.
-        </p>
+      <div className="mb-6 flex flex-col gap-3 text-center">
+        <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-fog px-3 py-1 text-[12px] font-medium text-slate-blue ring-1 ring-mist-border/70">
+          <ShieldCheck className="size-3.5 text-signal-blue" />
+          Join the senate
+        </div>
+        <div>
+          <h1 className="text-[30px] font-bold tracking-tight text-midnight-navy">Create account</h1>
+          <p className="mt-1.5 text-[15px] text-slate-blue">
+            Register as a senate member. An admin will approve your account.
+          </p>
+        </div>
       </div>
 
-      <Card padding="md">
+      <Card padding="md" variant="elevated">
         <CardContent>
           <form action={formAction} className="flex flex-col gap-4">
             <Input
@@ -69,8 +76,8 @@ export default function RegisterPage() {
         <CardFooter className="flex-col !gap-1 pt-0 text-center">
           <p className="text-caption text-slate-blue">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-signal-blue hover:underline">
-              Log in
+            <Link href="/login" className="inline-flex items-center gap-1 font-medium text-signal-blue hover:underline">
+              Log in <ArrowRight className="size-3.5" />
             </Link>
           </p>
         </CardFooter>

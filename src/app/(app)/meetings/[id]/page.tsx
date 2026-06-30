@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { requireActiveMember } from "@/lib/auth/guards";
 import { getMeeting, getAgendaItems, getQuorum } from "@/lib/meetings/queries";
 import { getMyAttendance } from "@/lib/attendance/actions";
@@ -44,73 +42,71 @@ export default async function MeetingDetailPage({
   const canCheckIn = meeting.status === "live" || meeting.status === "agenda_published";
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 py-8">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+    <div className="mx-auto max-w-4xl space-y-6 py-6 sm:space-y-8 sm:py-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <MeetingStatusBadge status={meeting.status} />
-            {meeting.status === "live" && (
+            {meeting.status === "live" ? (
               <Badge tone="success" className="gap-1.5">
                 <Radio className="size-3 animate-pulse" /> Live now
               </Badge>
-            )}
+            ) : null}
           </div>
-          <h1 className="text-heading font-bold text-midnight-navy">{meeting.title}</h1>
-          <p className="text-[15px] text-slate-blue">
+          <h1 className="text-[32px] font-bold leading-[1.14] tracking-[-0.025em] text-graphite sm:text-[40px]">
+            {meeting.title}
+          </h1>
+          <p className="text-[16px] leading-[1.5] text-steel">
             {formatDateTime(meeting.scheduled_at)}
             {meeting.location ? ` · ${meeting.location}` : null}
             {meeting.duration_min ? ` · ${meeting.duration_min} min` : null}
           </p>
         </div>
         {isLive ? (
-          <Link href={`/meetings/${id}/live`}>
-            <Button size="lg" className="shrink-0 gap-2">
+          <Link href={`/meetings/${id}/live`} className="w-full lg:w-auto">
+            <Button size="lg" className="gap-2 w-full lg:w-auto">
               <Radio className="size-4" /> Join live session
             </Button>
           </Link>
         ) : null}
       </div>
 
-      {/* Check-in */}
-      {canCheckIn && meeting.status !== "live" && (
+      {canCheckIn && meeting.status !== "live" ? (
         <Card>
-          <CardContent className="flex items-center justify-between py-4">
+          <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="size-5 text-slate-blue" />
+              <CheckCircle2 className="size-5 text-steel" />
               <div>
-                <p className="text-[14px] font-medium text-midnight-navy">Check in to this meeting</p>
-                <p className="text-caption text-slate-blue">
+                <p className="text-[14px] font-medium text-graphite">Check in to this meeting</p>
+                <p className="text-[14px] leading-[1.43] text-steel">
                   {quorum
                     ? `${quorum.present} of ${quorum.denominator} members present · quorum ${quorum.quorum_met ? "met" : "not met"}`
-                    : "Let the admin know you're attending."}
+                    : "Let the admin know you are attending."}
                 </p>
               </div>
             </div>
             <CheckInButton meetingId={id} alreadyCheckedIn={checkedIn} />
           </CardContent>
         </Card>
-      )}
+      ) : null}
 
-      {/* Description */}
       {meeting.description ? (
         <Card>
-          <CardContent className="py-4">
-            <p className="text-[15px] text-slate-blue whitespace-pre-wrap">{meeting.description}</p>
+          <CardContent className="py-4 sm:py-5">
+            <p className="whitespace-pre-wrap text-[16px] leading-[1.5] text-steel">{meeting.description}</p>
           </CardContent>
         </Card>
       ) : null}
 
-      {/* Agenda */}
-      <section>
-        <h2 className="mb-4 text-subheading font-semibold text-midnight-navy">Agenda</h2>
+      <section className="space-y-4">
+        <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">Agenda</h2>
         {agendaItems.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center">
-              <p className="text-[14px] text-slate-blue">
+              <p className="text-[14px] leading-[1.43] text-steel">
                 {meeting.status === "draft"
-                  ? "The agenda hasn't been published yet."
-                  : "No agenda items for this meeting."}
+                  ? "The agenda has not been published yet."
+                  : "There are no agenda items for this meeting."}
               </p>
             </CardContent>
           </Card>
@@ -119,29 +115,29 @@ export default async function MeetingDetailPage({
             {agendaItems.map((item, i) => (
               <Card
                 key={item.id}
-                className={item.status === "in_progress" ? "border-signal-blue border-2" : ""}
+                className={item.status === "in_progress" ? "border-graphite/30" : ""}
               >
                 <CardContent className="py-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 flex-col gap-1">
                       <div className="flex items-center gap-2">
-                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-fog text-[11px] font-bold text-slate-blue">
+                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-fog-border bg-plaster text-[11px] font-bold text-steel">
                           {i + 1}
                         </span>
-                        <p className="text-[15px] font-medium text-midnight-navy">{item.title}</p>
+                        <p className="text-[16px] font-medium text-graphite">{item.title}</p>
                       </div>
                       {item.description ? (
-                        <p className="ml-7 text-caption text-slate-blue">{item.description}</p>
+                        <p className="ml-7 text-[14px] leading-[1.43] text-steel">{item.description}</p>
                       ) : null}
                       {item.outcome_notes ? (
-                        <p className="ml-7 mt-1 rounded-md bg-fog px-2.5 py-1.5 text-caption text-slate-blue">
+                        <p className="ml-7 mt-1 rounded-md border border-fog-border bg-plaster px-2.5 py-1.5 text-[14px] leading-[1.43] text-steel">
                           Outcome: {item.outcome_notes}
                         </p>
                       ) : null}
                     </div>
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
                       <ItemStatusBadge status={item.status} size="sm" />
-                      <span className="text-caption text-slate-blue">{item.allocated_min} min</span>
+                      <span className="text-[14px] leading-[1.43] text-steel">{item.allocated_min} min</span>
                     </div>
                   </div>
                 </CardContent>

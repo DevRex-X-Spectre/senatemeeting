@@ -14,20 +14,20 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "bg-signal-blue text-paper hover:brightness-110 active:brightness-95 shadow-button",
+    "bg-graphite text-pure-white hover:bg-charcoal active:bg-graphite border border-graphite",
   ghost:
-    "bg-transparent text-midnight-navy hover:bg-fog active:bg-fog/80",
+    "bg-transparent text-graphite hover:bg-plaster active:bg-fog-border/50",
   outline:
-    "bg-transparent text-midnight-navy border border-mist-border hover:bg-fog active:bg-fog/80",
+    "border border-graphite/20 bg-pure-white text-graphite hover:border-graphite hover:bg-plaster active:bg-fog-border/40",
   destructive:
-    "bg-danger text-paper hover:brightness-110 active:brightness-95 shadow-button",
+    "bg-danger text-pure-white hover:bg-danger/90 active:bg-danger border border-danger",
   soft:
-    "bg-fog text-midnight-navy hover:bg-mist-border/60 active:bg-mist-border",
+    "bg-plaster text-graphite hover:bg-fog-border/50 active:bg-fog-border/70 border border-fog-border",
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "h-9 px-3 text-[13px]",
-  md: "h-11 px-5 text-[14px]",
+  sm: "h-10 px-3 text-[14px]",
+  md: "h-11 px-4 sm:px-5 text-[14px]",
   lg: "h-12 px-6 text-[16px]",
 };
 
@@ -52,10 +52,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         disabled={disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-all duration-150 ease-out",
-          "disabled:cursor-not-allowed disabled:opacity-60",
-          // Touch target — ensures 44px minimum on mobile
-          "min-h-[44px] sm:min-h-0",
+          "inline-flex items-center justify-center gap-2 rounded-md font-semibold tracking-tight transition-colors duration-150 ease-out",
+          "min-h-[44px] disabled:cursor-not-allowed disabled:opacity-60",
           VARIANTS[variant],
           SIZES[size],
           fullWidth && "w-full",

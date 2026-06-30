@@ -2,16 +2,24 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+<<<<<<< ours
 import { Button, Card, CardContent } from "@/components/ui";
 import { GradientBackdrop } from "@/components/ui/GradientBackdrop";
 import { CalendarCheck2, Vote, FileText, Users } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "UniSenate — Senate Meeting Management",
+=======
+import { ArrowRight, CalendarCheck2, FileText, Menu, University, Users, Vote } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "UniSenate, Senate Meeting Management",
+>>>>>>> theirs
 };
 
 export default async function LandingPage() {
   const supabase = await createClient();
+<<<<<<< ours
   const { data: { user } } = await supabase.auth.getUser();
   if (user) redirect("/dashboard");
 
@@ -131,10 +139,103 @@ export default async function LandingPage() {
           &copy; {new Date().getFullYear()} UniSenate. Built for academic governance.
         </p>
       </footer>
+=======
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) redirect("/dashboard");
+
+  return (
+    <main className="min-h-screen overflow-hidden bg-pure-white text-graphite">
+      <header className="border-b border-fog-border bg-pure-white">
+        <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-5 sm:h-16 sm:px-8">
+          <Link href="/" className="flex items-center gap-2" aria-label="UniSenate home">
+            <span className="flex size-6 items-center justify-center rounded-[2px] border border-graphite bg-pure-white text-graphite">
+              <University className="size-3.5" />
+            </span>
+            <span className="text-[14px] font-bold leading-none tracking-[-0.025em]">
+              UniSenate
+            </span>
+          </Link>
+
+          <nav className="hidden items-center gap-2 sm:flex" aria-label="Primary navigation">
+            <Link
+              href="/login"
+              className="rounded-lg px-3 py-2 text-[14px] font-semibold leading-none text-graphite transition-colors hover:bg-plaster"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/register"
+              className="rounded-lg bg-graphite px-4 py-2.5 text-[14px] font-bold leading-none text-pure-white transition-colors hover:bg-charcoal"
+            >
+              Get started
+            </Link>
+          </nav>
+
+          <Link
+            href="/login"
+            className="rounded-lg p-2 text-graphite transition-colors hover:bg-plaster sm:hidden"
+            aria-label="Open sign in"
+          >
+            <Menu className="size-5" />
+          </Link>
+        </div>
+      </header>
+
+      <section className="relative mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-[1200px] flex-col px-5 pt-14 sm:min-h-[calc(100vh-4rem)] sm:px-8 sm:pt-20">
+        <div className="relative z-10 mx-auto flex max-w-3xl flex-1 flex-col items-center text-center">
+          <h1 className="max-w-3xl text-[40px] font-bold leading-[1.1] tracking-[-0.025em] text-graphite sm:text-[56px]">
+            Senate meetings made <span className="text-prismic-green">clear.</span>
+          </h1>
+          <p className="mt-4 max-w-xl text-[16px] font-medium leading-[1.5] text-steel sm:text-[18px] sm:leading-[1.56]">
+            Plan agendas, approve members, run votes, and publish minutes from one simple workspace.
+          </p>
+
+          <div className="mt-7 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-graphite px-6 py-3 text-[16px] font-bold leading-[1.4] text-pure-white transition-colors hover:bg-charcoal"
+            >
+              Get started now <ArrowRight className="size-4" />
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center rounded-lg border-[1.5px] border-graphite bg-transparent px-6 py-3 text-[16px] font-semibold leading-[1.4] text-graphite transition-colors hover:bg-plaster"
+            >
+              Sign in
+            </Link>
+          </div>
+
+          <p className="mt-12 max-w-xl text-[14px] font-bold leading-[1.43] text-steel">
+            Built for senate teams that need approvals, attendance, motions, voting, and minutes in one place.
+          </p>
+        </div>
+
+        <LandingWorkshop />
+      </section>
+    </main>
+  );
+}
+
+function LandingWorkshop() {
+  return (
+    <div className="pointer-events-none relative -mx-5 mt-10 h-[190px] overflow-hidden sm:-mx-8 sm:h-[260px] lg:h-[300px]" aria-hidden>
+      <div className="absolute inset-x-[-12%] bottom-0 h-[82%] bg-graphite [clip-path:polygon(0_36%,9%_49%,18%_64%,25%_42%,34%_69%,42%_49%,51%_76%,60%_54%,70%_70%,79%_43%,91%_58%,100%_39%,100%_100%,0_100%)]" />
+      <div className="absolute inset-x-[-12%] bottom-[28px] h-[46%] bg-charcoal [clip-path:polygon(0_18%,9%_35%,18%_53%,25%_29%,34%_61%,42%_38%,51%_70%,60%_46%,70%_63%,79%_34%,91%_49%,100%_28%,100%_48%,91%_70%,79%_55%,70%_84%,60%_67%,51%_91%,42%_60%,34%_82%,25%_61%,18%_83%,9%_66%,0_49%)]" />
+      <div className="absolute inset-x-[-12%] bottom-[72px] h-[42%] bg-fog-border [clip-path:polygon(0_16%,9%_34%,18%_52%,25%_28%,34%_61%,42%_36%,51%_69%,60%_46%,70%_63%,79%_32%,91%_49%,100%_27%,100%_38%,91%_60%,79%_43%,70%_76%,60%_58%,51%_83%,42%_50%,34%_73%,25%_50%,18%_72%,9%_56%,0_38%)]" />
+
+      <IsometricTile className="left-[21%] bottom-[70px] rotate-[-28deg]" label="Sign up" icon={<Users className="size-3.5" />} />
+      <IsometricTile className="left-[29%] bottom-[40px] rotate-[-25deg]" label="Approve" icon={<CalendarCheck2 className="size-3.5" />} />
+      <IsometricTile className="left-[48%] bottom-[28px] rotate-[23deg]" label="Agenda" icon={<FileText className="size-3.5" />} />
+      <IsometricTile className="right-[32%] bottom-[75px] rotate-[24deg]" label="Vote" icon={<Vote className="size-3.5" />} />
+      <IsometricTile className="right-[20%] bottom-[42px] rotate-[-25deg]" label="Minutes" icon={<FileText className="size-3.5" />} />
+>>>>>>> theirs
     </div>
   );
 }
 
+<<<<<<< ours
 const FEATURES = [
   {
     icon: CalendarCheck2,
@@ -157,3 +258,23 @@ const FEATURES = [
     desc: "Auto-generate meeting minutes from your session data. Edit before publishing. Members acknowledge on receipt.",
   },
 ];
+=======
+function IsometricTile({
+  className,
+  label,
+  icon,
+}: {
+  className: string;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`absolute hidden h-9 min-w-24 items-center justify-center gap-2 rounded-[4px] border-2 border-ink-black bg-charcoal px-4 text-[12px] font-bold text-pure-white shadow-none sm:flex ${className}`}
+    >
+      {icon}
+      {label}
+    </div>
+  );
+}
+>>>>>>> theirs

@@ -33,7 +33,7 @@ export async function generateMinutesAction(_prev: unknown, formData: FormData) 
   const present = quorum?.present ?? attendance?.length ?? 0;
   const denom = quorum?.denominator ?? 0;
   lines.push(
-    `**Attendance:** ${present}/${denom} members present — quorum ${quorum?.quorum_met ? "**met**" : "_not met_"}`,
+    `**Attendance:** ${present}/${denom} members present, quorum ${quorum?.quorum_met ? "**met**" : "_not met_"}`,
   );
   lines.push("");
 
@@ -56,7 +56,7 @@ export async function generateMinutesAction(_prev: unknown, formData: FormData) 
   if (meetingMotions.length) {
     lines.push("## Motions");
     meetingMotions.forEach((m) => {
-      lines.push(`- **${m.text}** — raised by ${m.raised_by?.full_name ?? "Unknown"}, seconded by ${m.seconded_by?.full_name ?? "None"}, status: **${m.status}**`);
+      lines.push(`- **${m.text}**, raised by ${m.raised_by?.full_name ?? "Unknown"}, seconded by ${m.seconded_by?.full_name ?? "None"}, status: **${m.status}**`);
     });
     lines.push("");
   }

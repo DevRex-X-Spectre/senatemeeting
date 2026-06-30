@@ -14,29 +14,29 @@ export function StatCard({ label, value, delta, icon, className }: StatCardProps
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 rounded-lg border border-mist-border bg-paper p-5 shadow-card",
+        "flex flex-col gap-3 rounded-xl border border-fog-border bg-pure-white p-4 sm:p-5",
         className,
       )}
     >
-      <div className="flex items-center justify-between">
-        <span className="text-caption font-medium text-slate-blue">{label}</span>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-[14px] font-medium leading-[1.43] text-steel">{label}</span>
         {icon ? (
-          <span className="flex size-8 items-center justify-center rounded-full bg-fog text-midnight-navy">
+          <span className="flex size-8 items-center justify-center rounded-full border border-fog-border bg-plaster text-graphite">
             {icon}
           </span>
         ) : null}
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-[32px] font-bold leading-none tracking-tight text-midnight-navy">
+        <span className="text-[32px] font-bold leading-none tracking-[-0.025em] text-graphite">
           {value}
         </span>
         {delta ? (
           <span
             className={cn(
-              "inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-semibold leading-none",
+              "inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-[12px] font-semibold leading-none",
               delta.value >= 0
-                ? "bg-success-soft text-success"
-                : "bg-danger-soft text-danger",
+                ? "border-success/10 bg-success-soft text-success"
+                : "border-danger/10 bg-danger-soft text-danger",
             )}
           >
             {delta.value >= 0 ? (

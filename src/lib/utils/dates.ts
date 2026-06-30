@@ -24,32 +24,49 @@ const DATETIME_FMT = new Intl.DateTimeFormat("en-US", {
   minute: "2-digit",
 });
 
-export function formatDate(value: string | Date) {
-  return DATE_FMT.format(new Date(value));
+type DateInput = string | Date | null | undefined;
+
+function toValidDate(value: DateInput) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export function formatDateShort(value: string | Date) {
-  return DATE_SHORT_FMT.format(new Date(value));
+export function formatDate(value: DateInput) {
+  const date = toValidDate(value);
+  return date ? DATE_FMT.format(date) : "Date unavailable";
 }
 
-export function formatTime(value: string | Date) {
-  return TIME_FMT.format(new Date(value));
+export function formatDateShort(value: DateInput) {
+  const date = toValidDate(value);
+  return date ? DATE_SHORT_FMT.format(date) : "Date unavailable";
 }
 
-export function formatDateTime(value: string | Date) {
-  return DATETIME_FMT.format(new Date(value));
+export function formatTime(value: DateInput) {
+  const date = toValidDate(value);
+  return date ? TIME_FMT.format(date) : "Time unavailable";
 }
 
-export function isUpcoming(value: string | Date) {
-  return new Date(value).getTime() > Date.now();
+export function formatDateTime(value: DateInput) {
+  const date = toValidDate(value);
+  return date ? DATETIME_FMT.format(date) : "Date unavailable";
 }
 
-export function isPast(value: string | Date) {
-  return new Date(value).getTime() < Date.now();
+export function isUpcoming(value: DateInput) {
+  const date = toValidDate(value);
+  return date ? date.getTime() > Date.now() : false;
 }
 
-export function relativeTime(value: string | Date) {
-  const diffMs = new Date(value).getTime() - Date.now();
+export function isPast(value: DateInput) {
+  const date = toValidDate(value);
+  return date ? date.getTime() < Date.now() : false;
+}
+
+export function relativeTime(value: DateInput) {
+  const date = toValidDate(value);
+  if (!date) return "Date unavailable";
+
+  const diffMs = date.getTime() - Date.now();
   const abs = Math.abs(diffMs);
   const minute = 60_000;
   const hour = 60 * minute;

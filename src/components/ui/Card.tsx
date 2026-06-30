@@ -7,17 +7,17 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const VARIANTS = {
-  default: "bg-paper shadow-card",
-  elevated: "bg-paper shadow-card-hover",
-  outline: "bg-paper border border-mist-border",
-  soft: "bg-fog border border-mist-border",
+  default: "bg-pure-white border border-fog-border",
+  elevated: "bg-pure-white border border-graphite/10",
+  outline: "bg-pure-white border border-graphite/15",
+  soft: "bg-plaster border border-fog-border",
 };
 
 const PADDING = {
   none: "p-0",
-  sm: "p-4",
-  md: "p-6",
-  lg: "p-8",
+  sm: "p-4 sm:p-5",
+  md: "p-5 sm:p-6",
+  lg: "p-6 sm:p-8",
 };
 
 export function Card({
@@ -29,7 +29,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-lg",
+        "rounded-xl transition-colors duration-150",
         VARIANTS[variant],
         PADDING[padding],
         className,
@@ -40,14 +40,14 @@ export function Card({
 }
 
 export function CardHeader({ className, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex flex-col gap-1.5", className)} {...rest} />;
+  return <div className={cn("flex flex-col gap-2", className)} {...rest} />;
 }
 
 export function CardTitle({ className, ...rest }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
       className={cn(
-        "text-subheading font-semibold leading-tight text-midnight-navy",
+        "text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite",
         className,
       )}
       {...rest}
@@ -56,9 +56,7 @@ export function CardTitle({ className, ...rest }: React.HTMLAttributes<HTMLHeadi
 }
 
 export function CardDescription({ className, ...rest }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p className={cn("text-caption text-slate-blue", className)} {...rest} />
-  );
+  return <p className={cn("text-[14px] leading-[1.43] text-steel", className)} {...rest} />;
 }
 
 export function CardContent({ className, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
@@ -68,10 +66,7 @@ export function CardContent({ className, ...rest }: React.HTMLAttributes<HTMLDiv
 export function CardFooter({ className, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        "mt-4 flex flex-wrap items-center gap-3 border-t border-mist-border pt-4",
-        className,
-      )}
+      className={cn("mt-4 flex flex-wrap items-center gap-3 border-t border-fog-border pt-4", className)}
       {...rest}
     />
   );

@@ -12,7 +12,7 @@ export const notificationCopy: Record<NotificationKind, NotificationCopy> = {
   },
   meeting_starting: {
     title: "Meeting is live",
-    body: "The meeting has started — check in and join.",
+    body: "The meeting has started, check in and join.",
   },
   vote_opened: {
     title: "Vote opened",
@@ -31,8 +31,8 @@ export const notificationCopy: Record<NotificationKind, NotificationCopy> = {
     body: "An agenda item has been marked resolved.",
   },
   approval_granted: {
-    title: "You're approved",
-    body: "Welcome aboard — you can now participate in meetings.",
+    title: "You are approved",
+    body: "Welcome aboard, you can now participate in meetings.",
   },
   approval_pending: {
     title: "Account under review",

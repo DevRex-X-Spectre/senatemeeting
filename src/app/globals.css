@@ -11,14 +11,31 @@
   --color-midnight-navy: #0b3558;
   --color-signal-blue: #006bff;
   --color-slate-blue: #476788;
+  --color-steel: #476788;
   --color-carbon: #0a0a0a;
+  --color-graphite: #0a0a0a;
+  --color-charcoal: #1f2933;
+  --color-ink-black: #000000;
   --color-paper: #ffffff;
+  --color-pure-white: #ffffff;
   --color-mist: #f8f9fb;
   --color-fog: #e7edf6;
+  --color-plaster: #f8f9fb;
   --color-mist-border: #d4e0ed;
+  --color-fog-border: #d4e0ed;
   --color-silver: #e6e6e6;
   --color-steel-blue: #a6bbd1;
   --color-info-blue: #004eba;
+  --color-prismic-violet: #8e44ec;
+  --color-prismic-blue: #59b5f8;
+  --color-prismic-green: #3bbb96;
+  --color-lavender-wash: #e8c7ff;
+  --color-lavender-cream: #f5e6ff;
+  --color-sky-wash: #c3eefe;
+  --color-peach-wash: #fcdac4;
+  --color-peach-cream: #fef1e9;
+  --color-mint-wash: #d4f2e9;
+  --color-mint-cream: #e8f8f3;
   --color-magenta-bloom: #e55cff;
   --color-ultraviolet: #8247f5;
   --color-amber-spark: #ffa600;
@@ -146,6 +163,12 @@ body {
   }
   .text-pretty {
     text-wrap: pretty;
+  }
+  .pb-safe {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
   /* Decorative gradient backdrop — atmospheric only */
   .gradient-blob {

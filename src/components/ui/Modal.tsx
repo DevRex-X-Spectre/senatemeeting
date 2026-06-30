@@ -22,12 +22,10 @@ const SIZES = {
 };
 
 export function Modal({ open, onClose, title, description, children, size = "md" }: ModalProps) {
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => setMounted(true), []);
+  const isClient = typeof document !== "undefined";
 
   React.useEffect(() => {
-    if (!open) return;
+    if (!open || !isClient) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -37,13 +35,13 @@ export function Modal({ open, onClose, title, description, children, size = "md"
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
-  }, [open, onClose]);
+  }, [open, onClose, isClient]);
 
-  if (!mounted || !open) return null;
+  if (!open || !isClient) return null;
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-midnight-navy/40 p-0 sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-graphite/40 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? "modal-title" : undefined}
@@ -51,32 +49,32 @@ export function Modal({ open, onClose, title, description, children, size = "md"
     >
       <div
         className={cn(
-          "relative w-full overflow-hidden rounded-t-2xl bg-paper shadow-card-hover sm:rounded-2xl",
+          "relative w-full overflow-hidden rounded-t-xl bg-pure-white ring-1 ring-fog-border sm:rounded-xl",
           SIZES[size],
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-mist-border p-5">
+        <div className="flex items-start justify-between gap-4 border-b border-fog-border p-4 sm:p-5">
           <div className="flex flex-col gap-1">
             {title ? (
-              <h2 id="modal-title" className="text-subheading font-semibold leading-tight text-midnight-navy">
+              <h2 id="modal-title" className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">
                 {title}
               </h2>
             ) : null}
             {description ? (
-              <p className="text-caption text-slate-blue">{description}</p>
+              <p className="text-[14px] leading-[1.43] text-steel">{description}</p>
             ) : null}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-1.5 text-slate-blue transition-colors hover:bg-fog hover:text-midnight-navy"
+            className="rounded-md p-1.5 text-steel transition-colors duration-150 hover:bg-plaster hover:text-graphite"
             aria-label="Close"
           >
             <X className="size-5" />
           </button>
         </div>
-        <div className="max-h-[calc(100vh-12rem)] overflow-y-auto p-5">{children}</div>
+        <div className="max-h-[calc(100vh-12rem)] overflow-y-auto p-4 sm:p-5">{children}</div>
       </div>
     </div>,
     document.body,

@@ -9,21 +9,22 @@ export default async function ProfilePage() {
   const profile = await requireActiveMember();
 
   return (
-    <div className="mx-auto max-w-lg space-y-6 py-8">
-      <div>
-        <h1 className="text-heading font-bold text-midnight-navy">Profile</h1>
-        <p className="mt-1 text-[15px] text-slate-blue">
-          Manage your personal information.
+    <div className="mx-auto max-w-lg space-y-6 py-6 sm:space-y-8 sm:py-8">
+      <div className="space-y-2">
+        <h1 className="text-[32px] font-bold leading-[1.14] tracking-[-0.025em] text-graphite sm:text-[40px]">
+          Profile
+        </h1>
+        <p className="text-[16px] leading-[1.5] text-steel">
+          Manage your personal details and account information.
         </p>
       </div>
 
-      {/* Avatar preview */}
       <Card>
-        <CardContent className="flex items-center gap-4 py-5">
+        <CardContent className="flex flex-col gap-4 py-5 sm:flex-row sm:items-center">
           <Avatar name={profile.full_name} src={profile.avatar_url} size="lg" />
           <div className="flex flex-col gap-1">
-            <p className="text-[16px] font-semibold text-midnight-navy">{profile.full_name}</p>
-            <p className="text-caption text-slate-blue">{profile.email}</p>
+            <p className="text-[16px] font-semibold text-graphite">{profile.full_name}</p>
+            <p className="text-[14px] leading-[1.43] text-steel">{profile.email}</p>
             <Badge
               tone={profile.role === "admin" ? "info" : "neutral"}
               className="mt-1 w-fit capitalize"
@@ -34,7 +35,6 @@ export default async function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Edit form */}
       <Card>
         <CardHeader>
           <CardTitle>Edit information</CardTitle>

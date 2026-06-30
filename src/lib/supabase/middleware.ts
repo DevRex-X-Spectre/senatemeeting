@@ -34,7 +34,10 @@ export async function updateSession(request: NextRequest) {
   // Doing so risks losing auth context on concurrent requests.
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getUser().catch((error: unknown) => {
+    console.error("Supabase auth session refresh failed", error);
+    return { data: { user: null } };
+  });
 
   return { supabase, user, response };
 }

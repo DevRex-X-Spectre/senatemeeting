@@ -8,6 +8,15 @@ import { Plus, CalendarDays } from "lucide-react";
 
 export const metadata: Metadata = { title: "Manage meetings" };
 
+type AdminMeetingRow = {
+  id: string;
+  title: string;
+  scheduled_at: string;
+  location?: string | null;
+  status: string;
+  created_by?: { full_name?: string | null } | null;
+};
+
 export default async function AdminMeetingsPage() {
   await requireAdmin();
   const supabase = await createClient();
@@ -16,17 +25,21 @@ export default async function AdminMeetingsPage() {
     .select("*, created_by:profiles!meetings_created_by_fkey(full_name)")
     .order("scheduled_at", { ascending: false });
 
-  const meetings: any[] = (meetingsRaw ?? []) as any[];
+  const meetings = (meetingsRaw ?? []) as AdminMeetingRow[];
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 py-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-heading font-bold text-midnight-navy">Meetings</h1>
-          <p className="mt-1 text-[15px] text-slate-blue">Create and manage senate meetings.</p>
+    <div className="mx-auto max-w-4xl space-y-6 py-6 sm:space-y-8 sm:py-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-2">
+          <h1 className="text-[32px] font-bold leading-[1.14] tracking-[-0.025em] text-graphite sm:text-[40px]">
+            Meetings
+          </h1>
+          <p className="max-w-2xl text-[16px] leading-[1.5] text-steel">
+            Create, review, and manage senate meetings from one place.
+          </p>
         </div>
-        <Link href="/admin/meetings/new">
-          <Button className="gap-2">
+        <Link href="/admin/meetings/new" className="w-full sm:w-auto">
+          <Button className="gap-2 w-full sm:w-auto">
             <Plus className="size-4" /> New meeting
           </Button>
         </Link>
@@ -45,26 +58,26 @@ export default async function AdminMeetingsPage() {
         />
       ) : (
         <div className="flex flex-col gap-3">
-          {meetings.map((m: any) => (
-            <Card key={m.id} className="transition-shadow hover:shadow-card-hover">
-              <CardContent className="flex items-center justify-between gap-4 py-4">
+          {meetings.map((m) => (
+            <Card key={m.id} className="transition-colors duration-150 hover:border-graphite/20">
+              <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 flex-col gap-1">
                   <Link
                     href={`/admin/meetings/${m.id}`}
-                    className="text-[15px] font-semibold text-midnight-navy hover:underline"
+                    className="text-[16px] font-semibold text-graphite hover:underline"
                   >
                     {m.title}
                   </Link>
-                  <p className="text-caption text-slate-blue">
+                  <p className="text-[14px] leading-[1.43] text-steel">
                     {formatDateTime(m.scheduled_at)}
                     {m.location ? ` · ${m.location}` : null}
                     {m.created_by?.full_name ? ` · Created by ${m.created_by.full_name}` : null}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MeetingStatusBadge status={m.status as any} size="sm" />
-                  <Link href={`/admin/meetings/${m.id}`}>
-                    <Button variant="outline" size="sm">Manage</Button>
+                  <MeetingStatusBadge status={m.status} size="sm" />
+                  <Link href={`/admin/meetings/${m.id}`} className="w-full sm:w-auto">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto">Manage</Button>
                   </Link>
                 </div>
               </CardContent>

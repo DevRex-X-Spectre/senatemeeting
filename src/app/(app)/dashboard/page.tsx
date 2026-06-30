@@ -1,35 +1,49 @@
 import type { Metadata } from "next";
 import { requireActiveMember } from "@/lib/auth/guards";
 import { getMemberDashboard } from "@/lib/dashboard/queries";
-import { Card, CardHeader, CardTitle, CardContent, Button, EmptyState, MeetingStatusBadge } from "@/components/ui";
-import { formatDateTime, isUpcoming } from "@/lib/utils/dates";
+import { Card, CardContent, Button, EmptyState, MeetingStatusBadge } from "@/components/ui";
+import { formatDateTime } from "@/lib/utils/dates";
 import Link from "next/link";
 import { CalendarDays, FileCheck2, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = { title: "Dashboard" };
+
+type UpcomingMeeting = {
+  id: string;
+  title: string;
+  status: Parameters<typeof MeetingStatusBadge>[0]["status"];
+  scheduled_at: string;
+  location?: string | null;
+};
+
+type UnackedMinutes = {
+  meeting_id: string;
+  meeting?: {
+    title?: string | null;
+    minutes_published_at?: string | null;
+  } | null;
+};
 
 export default async function DashboardPage() {
   const profile = await requireActiveMember();
   const { upcomingMeetings, unackedMinutes } = await getMemberDashboard(profile);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 py-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-heading font-bold text-midnight-navy">
+    <div className="mx-auto max-w-4xl space-y-6 py-6 sm:space-y-8 sm:py-8">
+      <div className="space-y-2">
+        <h1 className="text-[32px] font-bold leading-[1.14] tracking-[-0.025em] text-graphite sm:text-[40px]">
           Good {getTimeOfDay()}, {profile.full_name.split(" ")[0]}.
         </h1>
-        <p className="mt-1 text-[15px] text-slate-blue">
-          Here&apos;s what&apos;s coming up in the senate.
+        <p className="max-w-2xl text-[16px] leading-[1.5] text-steel">
+          Here is a quick view of your upcoming meetings and any minutes that still need your review.
         </p>
       </div>
 
-      {/* Upcoming meetings */}
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-subheading font-semibold text-midnight-navy">Upcoming meetings</h2>
-          <Link href="/meetings">
-            <Button variant="ghost" size="sm" className="gap-1.5">
+      <section className="space-y-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">Upcoming meetings</h2>
+          <Link href="/meetings" className="w-full sm:w-auto">
+            <Button variant="ghost" size="sm" className="gap-1.5 w-full sm:w-auto">
               View all <ArrowRight className="size-4" />
             </Button>
           </Link>
@@ -39,27 +53,29 @@ export default async function DashboardPage() {
           <EmptyState
             icon={<CalendarDays className="size-6" />}
             title="No upcoming meetings"
-            description="When an admin schedules a meeting, it'll appear here."
+            description="When a meeting is scheduled, it will show up here."
           />
         ) : (
           <div className="flex flex-col gap-3">
-            {upcomingMeetings.map((m: any) => (
-              <Card key={m.id} className="transition-shadow hover:shadow-card-hover">
-                <CardContent className="flex items-center justify-between gap-4">
+            {(upcomingMeetings as UpcomingMeeting[]).map((m) => (
+              <Card key={m.id} className="transition-colors duration-150 hover:border-graphite/20">
+                <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex min-w-0 flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                      <Link href={`/meetings/${m.id}`} className="text-[15px] font-semibold text-midnight-navy hover:underline truncate">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link href={`/meetings/${m.id}`} className="truncate text-[16px] font-semibold text-graphite hover:underline">
                         {m.title}
                       </Link>
-                      <MeetingStatusBadge status={m.status as any} size="sm" />
+                      <MeetingStatusBadge status={m.status} size="sm" />
                     </div>
-                    <p className="text-caption text-slate-blue">
+                    <p className="text-[14px] leading-[1.43] text-steel">
                       {formatDateTime(m.scheduled_at)}
                       {m.location ? ` · ${m.location}` : null}
                     </p>
                   </div>
-                  <Link href={`/meetings/${m.id}`}>
-                    <Button variant="outline" size="sm">View</Button>
+                  <Link href={`/meetings/${m.id}`} className="w-full sm:w-auto">
+                    <Button variant="outline" size="sm" fullWidth className="sm:w-auto">
+                      View meeting
+                    </Button>
                   </Link>
                 </CardContent>
               </Card>
@@ -68,38 +84,39 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      {/* Minutes to acknowledge */}
-      {unackedMinutes.length > 0 && (
-        <section>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-subheading font-semibold text-midnight-navy">Minutes awaiting acknowledgment</h2>
-          </div>
+      {unackedMinutes.length > 0 ? (
+        <section className="space-y-4">
+          <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">
+            Minutes waiting for review
+          </h2>
           <div className="flex flex-col gap-3">
-            {unackedMinutes.map((m: any) => (
-              <Card key={m.meeting_id} className="flex items-center justify-between gap-4">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex size-9 items-center justify-center rounded-full bg-warning-soft text-warning">
-                    <FileCheck2 className="size-4" />
+            {(unackedMinutes as UnackedMinutes[]).map((m) => (
+              <Card key={m.meeting_id} className="border-l-4 border-l-warning/70 transition-colors duration-150 hover:border-graphite/20">
+                <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 items-center justify-center rounded-full border border-warning/10 bg-warning-soft text-warning">
+                      <FileCheck2 className="size-4" />
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-[14px] font-medium text-graphite">
+                        {m.meeting?.title ?? "Meeting minutes"}
+                      </p>
+                      <p className="text-[14px] leading-[1.43] text-steel">
+                        Published {m.meeting?.minutes_published_at ? formatDateTime(m.meeting.minutes_published_at) : ""}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-[14px] font-medium text-midnight-navy">
-                      {m.meeting?.title ?? "Meeting minutes"}
-                    </p>
-                    <p className="text-caption text-slate-blue">
-                      Published {m.meeting?.minutes_published_at ? formatDateTime(m.meeting.minutes_published_at) : ""}
-                    </p>
-                  </div>
-                </CardContent>
-                <div className="pr-4">
-                  <Link href={`/meetings/${m.meeting_id}/minutes`}>
-                    <Button variant="outline" size="sm">Review & acknowledge</Button>
+                  <Link href={`/meetings/${m.meeting_id}/minutes`} className="w-full sm:w-auto">
+                    <Button variant="outline" size="sm" fullWidth className="sm:w-auto">
+                      Review minutes
+                    </Button>
                   </Link>
-                </div>
+                </CardContent>
               </Card>
             ))}
           </div>
         </section>
-      )}
+      ) : null}
     </div>
   );
 }
