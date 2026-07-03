@@ -15,9 +15,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <ToastProvider>
-      <div className="app-grid-shell flex min-h-screen">
+      <div className="app-grid-shell min-h-screen">
         <Sidebar profile={p} />
-        <div className="flex min-h-screen flex-1 flex-col sm:ml-60">
+        <div className="flex min-h-screen min-w-0 flex-col sm:pl-60">
           <Topbar profile={p} />
           <main className="flex-1 px-4 pb-6 pt-4 sm:px-6 sm:pt-6">
             {children}

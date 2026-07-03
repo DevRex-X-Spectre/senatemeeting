@@ -64,7 +64,7 @@ export function Topbar({ profile }: TopbarProps) {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-fog-border bg-pure-white/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 w-full border-b border-fog-border bg-pure-white/95 backdrop-blur-xl">
       <div className="flex h-[68px] items-center justify-between gap-3 px-4 sm:h-18 sm:px-6 lg:h-20 lg:px-8">
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2 sm:hidden">

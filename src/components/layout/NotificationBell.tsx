@@ -35,7 +35,7 @@ export function NotificationBell({ unread }: NotificationBellProps) {
             aria-hidden
           />
 
-          <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-fog-border bg-pure-white">
+          <div className="fixed right-3 top-[76px] z-50 w-[min(20rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl border border-fog-border bg-pure-white shadow-card-hover sm:right-6 sm:top-[80px] lg:right-8 lg:top-[88px]">
             <div className="flex items-center justify-between border-b border-fog-border px-4 py-3">
               <h3 className="text-[14px] font-semibold text-graphite">
                 Notifications

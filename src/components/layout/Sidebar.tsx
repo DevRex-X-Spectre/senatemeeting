@@ -40,7 +40,7 @@ export function Sidebar({ profile }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden sm:flex fixed left-0 top-0 h-full w-60 flex-col border-r border-fog-border bg-pure-white",
+        "fixed left-0 top-0 z-40 hidden h-full w-60 flex-col border-r border-fog-border bg-pure-white sm:flex",
       )}
       aria-label="Navigation"
     >
