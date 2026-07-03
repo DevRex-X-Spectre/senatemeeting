@@ -24,7 +24,7 @@ export default async function MeetingsPage() {
       <div className="space-y-2">
         <h1 className="text-[32px] font-bold leading-[1.14] tracking-[-0.025em] text-graphite sm:text-[40px]">Meetings</h1>
         <p className="max-w-2xl text-[16px] leading-[1.5] text-steel">
-          Browse upcoming sessions, live meetings, and past meeting records.
+          View published senate meetings, follow their agenda checklists, and track what the VC has marked accomplished.
         </p>
       </div>
 
@@ -38,7 +38,7 @@ export default async function MeetingsPage() {
         <div className="space-y-8">
           {upcoming.length > 0 ? (
             <section className="space-y-4">
-              <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">Upcoming</h2>
+              <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">Published agendas</h2>
               <div className="flex flex-col gap-3">
                 {upcoming.map((m) => (
                   <MeetingRow key={m.id} meeting={m} />

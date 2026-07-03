@@ -33,7 +33,7 @@ export const meetingStatusMeta: Record<MeetingStatus, StatusMeta> = {
     dotClass: "bg-slate-blue",
   },
   minutes_published: {
-    label: "Minutes out",
+    label: "Completed record",
     badgeClass: `${baseBadge} bg-success-soft text-success`,
     dotClass: "bg-success",
   },
@@ -46,17 +46,17 @@ export const meetingStatusMeta: Record<MeetingStatus, StatusMeta> = {
 
 export const itemStatusMeta: Record<ItemStatus, StatusMeta> = {
   pending: {
-    label: "Pending",
+    label: "To cover",
     badgeClass: `${baseBadge} bg-fog text-slate-blue`,
     dotClass: "bg-steel-blue",
   },
   in_progress: {
-    label: "In progress",
+    label: "Being covered",
     badgeClass: `${baseBadge} bg-signal-blue text-paper`,
     dotClass: "bg-signal-blue",
   },
   resolved: {
-    label: "Resolved",
+    label: "Accomplished",
     badgeClass: `${baseBadge} bg-success-soft text-success`,
     dotClass: "bg-success",
   },
@@ -66,7 +66,7 @@ export const itemStatusMeta: Record<ItemStatus, StatusMeta> = {
     dotClass: "bg-warning",
   },
   tabled: {
-    label: "Tabled",
+    label: "Skipped",
     badgeClass: `${baseBadge} bg-warning-soft text-warning`,
     dotClass: "bg-warning",
   },

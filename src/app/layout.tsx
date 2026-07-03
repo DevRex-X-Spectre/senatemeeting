@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s · UniSenate",
   },
   description:
-    "Manage university senate meetings, agendas, motions, voting, and minutes — all in one quiet, professional canvas.",
+    "Manage university senate meetings around published agenda checklists, VC progress tracking, and official records.",
 };
 
 export default function RootLayout({

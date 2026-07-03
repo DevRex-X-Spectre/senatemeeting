@@ -3,43 +3,13 @@
 import * as React from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
-import { createClient } from "@/lib/supabase/browser";
 
 interface NotificationBellProps {
-  userId: string;
+  unread: number;
 }
 
-export function NotificationBell({ userId }: NotificationBellProps) {
-  const [unread, setUnread] = React.useState(0);
+export function NotificationBell({ unread }: NotificationBellProps) {
   const [open, setOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
-      .channel(`notifications:${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        () => setUnread((n) => n + 1),
-      )
-      .subscribe();
-
-    supabase
-      .from("notifications")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .is("read_at", null)
-      .then(({ count }) => setUnread(count ?? 0));
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId]);
 
   return (
     <div className="relative">

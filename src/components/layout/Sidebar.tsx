@@ -28,21 +28,6 @@ const ADMIN_ITEMS = [
   { href: "/admin/members", label: "Members", icon: University },
 ];
 
-const MOBILE_NAV_ITEMS = [
-  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { href: "/meetings", label: "Meetings", icon: CalendarDays },
-  { href: "/history", label: "History", icon: History },
-  { href: "/notifications", label: "Alerts", icon: Bell },
-  { href: "/profile", label: "Profile", icon: User },
-];
-
-const MOBILE_ADMIN_ITEMS = [
-  { href: "/admin", label: "Home", icon: LayoutDashboard },
-  { href: "/admin/meetings", label: "Meetings", icon: CalendarDays },
-  { href: "/admin/members", label: "Members", icon: University },
-  { href: "/profile", label: "Profile", icon: User },
-];
-
 interface SidebarProps {
   profile: Profile;
 }
@@ -51,45 +36,14 @@ export function Sidebar({ profile }: SidebarProps) {
   const pathname = usePathname();
   const isAdmin = profile.role === "admin";
   const items = isAdmin ? ADMIN_ITEMS : NAV_ITEMS;
-  const mobileItems = isAdmin ? MOBILE_ADMIN_ITEMS : MOBILE_NAV_ITEMS;
 
   return (
-    <>
-      <nav
-        className={cn(
-          "fixed inset-x-0 bottom-0 z-40 flex items-end border-t border-fog-border bg-pure-white/95 px-2 pt-1 shadow-[0_-10px_30px_rgba(71,103,136,0.08)] backdrop-blur-xl sm:hidden",
-          "min-h-[68px] pb-[max(0.5rem,env(safe-area-inset-bottom))]",
-        )}
-        aria-label="Mobile navigation"
-      >
-        {mobileItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActiveRoute(pathname, item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-md px-1 py-2 text-[11px] font-semibold leading-none transition-colors duration-150",
-                active
-                  ? "bg-plaster text-graphite"
-                  : "text-steel hover:bg-plaster/70 hover:text-graphite",
-              )}
-              aria-current={active ? "page" : undefined}
-            >
-              <Icon className={cn("size-5 shrink-0 transition-transform duration-150", active && "scale-105")} />
-              <span className="block max-w-full truncate">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      <aside
-        className={cn(
-          "hidden sm:flex fixed left-0 top-0 h-full w-60 flex-col border-r border-fog-border bg-pure-white",
-        )}
-        aria-label="Navigation"
-      >
+    <aside
+      className={cn(
+        "hidden sm:flex fixed left-0 top-0 h-full w-60 flex-col border-r border-fog-border bg-pure-white",
+      )}
+      aria-label="Navigation"
+    >
         <div className="flex h-20 items-center gap-3 border-b border-fog-border px-5 shrink-0">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-graphite bg-graphite text-pure-white">
             <University className="size-4" />
@@ -127,8 +81,7 @@ export function Sidebar({ profile }: SidebarProps) {
             })}
           </ul>
         </nav>
-      </aside>
-    </>
+    </aside>
   );
 }
 

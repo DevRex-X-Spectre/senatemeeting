@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { requireActiveMember } from "@/lib/auth/guards";
-import { getMeeting, getAgendaItems, getQuorum } from "@/lib/meetings/queries";
+import { getMeetingOverview } from "@/lib/meetings/queries";
 import { getMyAttendance } from "@/lib/attendance/actions";
 import {
   Card,
   CardContent,
   Button,
-  ItemStatusBadge,
   MeetingStatusBadge,
   Badge,
 } from "@/components/ui";
@@ -14,7 +13,7 @@ import { formatDateTime } from "@/lib/utils/dates";
 import Link from "next/link";
 import { CheckCircle2, Radio } from "lucide-react";
 import { CheckInButton } from "@/components/meetings/CheckInButton";
-import type { Meeting, AgendaItem, QuorumSnapshot } from "@/types/domain";
+import { PublishedAgendaList } from "@/components/meetings/PublishedAgendaList";
 
 export const metadata: Metadata = { title: "Meeting" };
 
@@ -29,14 +28,10 @@ export default async function MeetingDetailPage({
 }) {
   const { id } = await params;
   const profile = await requireActiveMember();
-  const meeting = (await getMeeting(id)) as (Meeting & { created_by: { full_name: string } }) | null;
+  const { meeting, agendaItems, quorum } = await getMeetingOverview(id);
   if (!meeting) notFound();
 
-  const [agendaItems, quorum, checkedIn] = await Promise.all([
-    getAgendaItems(id) as Promise<AgendaItem[]>,
-    getQuorum(id) as Promise<QuorumSnapshot | null>,
-    getMyAttendance(id, profile.id),
-  ]);
+  const checkedIn = await getMyAttendance(id, profile.id);
 
   const isLive = meeting.status === "live";
   const canCheckIn = meeting.status === "live" || meeting.status === "agenda_published";
@@ -99,51 +94,20 @@ export default async function MeetingDetailPage({
       ) : null}
 
       <section className="space-y-4">
-        <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">Agenda</h2>
-        {agendaItems.length === 0 ? (
+        <div>
+          <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">Published agenda checklist</h2>
+          <p className="mt-1 text-[14px] leading-[1.43] text-steel">
+            Follow the agenda items the VC has published for this senate meeting. Progress updates as items are covered.
+          </p>
+        </div>
+        {meeting.status === "draft" ? (
           <Card>
             <CardContent className="py-8 text-center">
-              <p className="text-[14px] leading-[1.43] text-steel">
-                {meeting.status === "draft"
-                  ? "The agenda has not been published yet."
-                  : "There are no agenda items for this meeting."}
-              </p>
+              <p className="text-[14px] leading-[1.43] text-steel">The VC has not published this agenda yet.</p>
             </CardContent>
           </Card>
         ) : (
-          <div className="flex flex-col gap-3">
-            {agendaItems.map((item, i) => (
-              <Card
-                key={item.id}
-                className={item.status === "in_progress" ? "border-graphite/30" : ""}
-              >
-                <CardContent className="py-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-fog-border bg-plaster text-[11px] font-bold text-steel">
-                          {i + 1}
-                        </span>
-                        <p className="text-[16px] font-medium text-graphite">{item.title}</p>
-                      </div>
-                      {item.description ? (
-                        <p className="ml-7 text-[14px] leading-[1.43] text-steel">{item.description}</p>
-                      ) : null}
-                      {item.outcome_notes ? (
-                        <p className="ml-7 mt-1 rounded-md border border-fog-border bg-plaster px-2.5 py-1.5 text-[14px] leading-[1.43] text-steel">
-                          Outcome: {item.outcome_notes}
-                        </p>
-                      ) : null}
-                    </div>
-                    <div className="flex flex-col items-end gap-1.5 shrink-0">
-                      <ItemStatusBadge status={item.status} size="sm" />
-                      <span className="text-[14px] leading-[1.43] text-steel">{item.allocated_min} min</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <PublishedAgendaList meetingId={id} initialItems={agendaItems} />
         )}
       </section>
     </div>

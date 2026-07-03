@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { Button, Modal } from "@/components/ui";
 import { publishAgendaAction, startMeetingAction, endMeetingAction } from "@/lib/meetings/actions";
 
@@ -23,6 +24,7 @@ export function StatusActionButton({
   icon,
   confirm,
 }: Props) {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [pending, setPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -37,10 +39,14 @@ export function StatusActionButton({
       if (actionType === "publishAgenda") result = await publishAgendaAction(null, fd);
       else if (actionType === "startMeeting") result = await startMeetingAction(null, fd);
       else result = await endMeetingAction(null, fd);
-      if (!result.ok) setError(result.error ?? "Action failed");
-      else setOpen(false);
-    } catch (e: any) {
-      setError(e?.message ?? "Action failed");
+      if (!result.ok) {
+        setError(result.error ?? "Action failed");
+      } else {
+        setOpen(false);
+        router.refresh();
+      }
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Action failed");
     } finally {
       setPending(false);
     }

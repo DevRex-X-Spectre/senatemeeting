@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/guards";
-import { createClient } from "@/lib/supabase/server";
+import { listMeetings } from "@/lib/meetings/queries";
 import { Card, CardContent, Button, MeetingStatusBadge, EmptyState } from "@/components/ui";
 import { formatDateTime } from "@/lib/utils/dates";
 import Link from "next/link";
@@ -8,24 +8,9 @@ import { Plus, CalendarDays } from "lucide-react";
 
 export const metadata: Metadata = { title: "Manage meetings" };
 
-type AdminMeetingRow = {
-  id: string;
-  title: string;
-  scheduled_at: string;
-  location?: string | null;
-  status: string;
-  created_by?: { full_name?: string | null } | null;
-};
-
 export default async function AdminMeetingsPage() {
   await requireAdmin();
-  const supabase = await createClient();
-  const { data: meetingsRaw } = await supabase
-    .from("meetings")
-    .select("*, created_by:profiles!meetings_created_by_fkey(full_name)")
-    .order("scheduled_at", { ascending: false });
-
-  const meetings = (meetingsRaw ?? []) as AdminMeetingRow[];
+  const meetings = await listMeetings({ limit: 100 });
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 py-6 sm:space-y-8 sm:py-8">

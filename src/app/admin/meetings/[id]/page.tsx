@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/guards";
-import { getMeeting, getAgendaItems } from "@/lib/meetings/queries";
+import { getMeetingOverview } from "@/lib/meetings/queries";
 import {
   Card, CardContent,
-  Button, MeetingStatusBadge, ItemStatusBadge, Badge,
+  Button, MeetingStatusBadge,
 } from "@/components/ui";
 import { formatDateTime } from "@/lib/utils/dates";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import {
   Play, Square, Send,
 } from "lucide-react";
 import { StatusActionButton } from "@/components/admin/meetings/StatusActionButton";
+import { AgendaChecklistControls } from "@/components/admin/meetings/AgendaChecklistControls";
 
 export const metadata: Metadata = { title: "Meeting" };
 
@@ -26,10 +27,8 @@ export default async function AdminMeetingDetailPage({
 }) {
   const { id } = await params;
   await requireAdmin();
-  const meeting: any = await getMeeting(id);
+  const { meeting, agendaItems } = await getMeetingOverview(id);
   if (!meeting) notFound();
-
-  const agendaItems: any[] = await getAgendaItems(id);
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 py-8">
@@ -40,7 +39,7 @@ export default async function AdminMeetingDetailPage({
         </Link>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <MeetingStatusBadge status={meeting.status as any} className="mb-2" />
+            <MeetingStatusBadge status={meeting.status} className="mb-2" />
             <h1 className="text-heading font-bold text-midnight-navy">{meeting.title}</h1>
             <p className="mt-1 text-[15px] text-slate-blue">
               {formatDateTime(meeting.scheduled_at)}
@@ -55,36 +54,36 @@ export default async function AdminMeetingDetailPage({
       <div className="flex flex-wrap gap-3">
         {meeting.status === "draft" && (
           <>
+            <Link href={`/admin/meetings/${meeting.id}/agenda`}>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <CalendarPlus className="size-4" /> Build agenda checklist
+              </Button>
+            </Link>
             <StatusActionButton
               actionType="publishAgenda"
               meetingId={meeting.id}
-              label="Publish agenda"
+              label="Publish agenda to members"
               variant="primary"
               icon={<Send className="size-4" />}
-              confirm="Publish the agenda to notify all members?"
+              confirm="Publish this meeting agenda so approved senate members can view it?"
             />
-            <Link href={`/admin/meetings/${meeting.id}/agenda`}>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <CalendarPlus className="size-4" /> Build agenda
-              </Button>
-            </Link>
           </>
         )}
         {meeting.status === "agenda_published" && (
           <StatusActionButton
             actionType="startMeeting"
             meetingId={meeting.id}
-            label="Start meeting"
+            label="Start meeting session"
             variant="primary"
             icon={<Play className="size-4" />}
-            confirm="Start the live session? Members will be notified."
+            confirm="Start the meeting session? Members will be notified."
           />
         )}
         {meeting.status === "live" && (
           <>
             <Link href={`/admin/meetings/${meeting.id}/live`}>
               <Button variant="primary" size="sm" className="gap-1.5">
-                <Radio className="size-4 animate-pulse" /> Open live controls
+                <Radio className="size-4 animate-pulse" /> Advanced live controls
               </Button>
             </Link>
             <StatusActionButton
@@ -100,7 +99,7 @@ export default async function AdminMeetingDetailPage({
         {(meeting.status === "ended" || meeting.status === "live") && !meeting.minutes_published_at && (
           <Link href={`/admin/meetings/${meeting.id}/minutes`}>
             <Button variant="outline" size="sm" className="gap-1.5">
-              <FileText className="size-4" /> Manage minutes
+              <FileText className="size-4" /> Post-meeting record
             </Button>
           </Link>
         )}
@@ -109,11 +108,16 @@ export default async function AdminMeetingDetailPage({
       {/* Agenda */}
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-subheading font-semibold text-midnight-navy">Agenda</h2>
+          <div>
+            <h2 className="text-subheading font-semibold text-midnight-navy">Agenda checklist</h2>
+            <p className="mt-1 text-caption text-slate-blue">
+              Publish this checklist for senate members, then mark each item as accomplished as the meeting covers it.
+            </p>
+          </div>
           {meeting.status === "draft" && (
             <Link href={`/admin/meetings/${meeting.id}/agenda`}>
               <Button variant="outline" size="sm" className="gap-1.5">
-                <CalendarPlus className="size-4" /> Edit agenda
+                <CalendarPlus className="size-4" /> Edit checklist
               </Button>
             </Link>
           )}
@@ -122,35 +126,19 @@ export default async function AdminMeetingDetailPage({
           <Card>
             <CardContent className="py-8 text-center">
               <p className="text-caption text-slate-blue">
-                No agenda items yet.{" "}
+                No checklist items yet.{" "}
                 <Link href={`/admin/meetings/${meeting.id}/agenda`} className="text-signal-blue hover:underline">
-                  Build the agenda
+                  Build the agenda checklist
                 </Link>
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="flex flex-col gap-2">
-            {agendaItems.map((item: any, i: number) => (
-              <Card key={item.id}>
-                <CardContent className="flex items-center justify-between gap-3 py-3">
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-fog text-[11px] font-bold text-slate-blue">
-                      {i + 1}
-                    </span>
-                    <p className="text-[14px] font-medium text-midnight-navy">{item.title}</p>
-                    {item.carried_from_id ? (
-                      <Badge tone="warning" size="sm">Carried</Badge>
-                    ) : null}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-caption text-slate-blue">{item.allocated_min} min</span>
-                    <ItemStatusBadge status={item.status as any} size="sm" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <AgendaChecklistControls
+            key={agendaItems.map((item) => `${item.id}:${item.status}:${item.order_index}`).join("|")}
+            meetingStatus={meeting.status}
+            initialItems={agendaItems}
+          />
         )}
       </section>
     </div>

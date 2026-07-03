@@ -7,10 +7,10 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const VARIANTS = {
-  default: "bg-pure-white border border-fog-border",
-  elevated: "bg-pure-white border border-graphite/10",
-  outline: "bg-pure-white border border-graphite/15",
-  soft: "bg-plaster border border-fog-border",
+  default: "bg-pure-white/96 border border-fog-border",
+  elevated: "bg-pure-white border border-graphite/10 shadow-card-hover",
+  outline: "bg-pure-white/96 border border-graphite/15",
+  soft: "bg-plaster/92 border border-fog-border",
 };
 
 const PADDING = {
@@ -29,7 +29,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-xl transition-colors duration-150",
+        "rounded-xl shadow-card backdrop-blur-[1px] transition-[box-shadow,transform,border-color,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-graphite/15 hover:shadow-card-hover motion-reduce:transform-none",
         VARIANTS[variant],
         PADDING[padding],
         className,

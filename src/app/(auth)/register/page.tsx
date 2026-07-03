@@ -6,7 +6,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { registerAction } from "@/lib/auth/actions";
 import { Card, CardContent, CardFooter, Button, Input } from "@/components/ui";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -22,6 +22,12 @@ export default function RegisterPage() {
 
   return (
     <>
+      <Link
+        href="/"
+        className="mb-5 inline-flex items-center gap-1.5 rounded-lg border border-fog-border bg-pure-white/88 px-3 py-2 text-[13px] font-semibold text-graphite shadow-card backdrop-blur-sm transition-colors hover:bg-plaster"
+      >
+        <ArrowLeft className="size-4" /> Back to home
+      </Link>
       <div className="mb-6 flex flex-col gap-3 text-center">
         <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-fog px-3 py-1 text-[12px] font-medium text-slate-blue ring-1 ring-mist-border/70">
           <ShieldCheck className="size-3.5 text-signal-blue" />
@@ -65,6 +71,15 @@ export default function RegisterPage() {
               required
               hint="Minimum 8 characters."
               error={state?.errors?.password?.[0]}
+            />
+            <Input
+              label="Confirm password"
+              name="confirmPassword"
+              type="password"
+              placeholder="Re-enter your password"
+              autoComplete="new-password"
+              required
+              error={state?.errors?.confirmPassword?.[0]}
             />
 
             <div className="mt-1">

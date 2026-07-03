@@ -4,28 +4,23 @@ import { updateSession } from "@/lib/supabase/middleware";
 const PUBLIC_ROUTES = new Set(["/", "/login", "/register", "/pending-approval", "/auth/callback"]);
 const ADMIN_PREFIX = "/admin";
 
-export async function middleware(request: NextRequest) {
-  const { user, response } = await updateSession(request);
-
+export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  // Authenticated users on landing/login/register → send to dashboard.
-  if (user && (pathname === "/login" || pathname === "/register" || pathname === "/")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    url.search = "";
-    return NextResponse.redirect(url);
+  if (isPublicStatic(pathname) || PUBLIC_ROUTES.has(pathname)) {
+    return NextResponse.next();
   }
 
-  // Unauthenticated on a protected route → /login.
-  if (!user && !PUBLIC_ROUTES.has(pathname) && !isPublicStatic(pathname)) {
+  const { user, response } = await updateSession(request);
+
+  // Unauthenticated on a protected route goes to login.
+  if (!user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = `?next=${encodeURIComponent(pathname + search)}`;
     return NextResponse.redirect(url);
   }
 
-  // Logged-in users: derive role + status from JWT app_metadata claims.
   if (user) {
     const claims = (user.app_metadata ?? {}) as {
       role?: "admin" | "member";
@@ -34,7 +29,6 @@ export async function middleware(request: NextRequest) {
     const role = claims.role ?? "member";
     const status = claims.status ?? "pending";
 
-    // Suspended users may only view /suspended.
     if (status === "suspended" && pathname !== "/suspended") {
       const url = request.nextUrl.clone();
       url.pathname = "/suspended";
@@ -42,7 +36,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Pending members can only be on /pending-approval (and their dashboard is gated by app shell).
     if (status === "pending" && pathname !== "/pending-approval") {
       const url = request.nextUrl.clone();
       url.pathname = "/pending-approval";
@@ -50,7 +43,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Admin gate.
     if (pathname.startsWith(ADMIN_PREFIX) && role !== "admin") {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
@@ -72,13 +64,6 @@ function isPublicStatic(pathname: string) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static
-     * - _next/image
-     * - favicon
-     * - public files (svg/png/etc.)
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

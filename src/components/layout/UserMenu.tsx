@@ -49,10 +49,10 @@ export function UserMenu({ profile }: UserMenuProps) {
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-fog-border bg-pure-white">
+          <div className="fixed right-3 top-[76px] z-50 w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl border border-fog-border bg-pure-white shadow-card-hover sm:absolute sm:right-0 sm:top-full sm:mt-2 sm:w-56">
             <div className="border-b border-fog-border px-3 py-3">
-              <p className="text-[13px] font-medium text-graphite">{profile.full_name}</p>
-              <p className="text-[12px] text-steel">{profile.email}</p>
+              <p className="truncate text-[13px] font-medium text-graphite">{profile.full_name}</p>
+              <p className="break-all text-[12px] text-steel">{profile.email}</p>
             </div>
             <nav className="p-1">
               <button
