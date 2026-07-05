@@ -9,12 +9,13 @@ import {
   updateItemStatusSchema,
 } from "@/lib/validations/agenda-item";
 import { requireActiveMember } from "@/lib/auth/guards";
+import { canManageSenate } from "@/lib/auth/permissions";
 import { revalidatePath } from "next/cache";
 import { actionError, validationError, withTimeout } from "@/lib/supabase/errors";
 
 export async function createAgendaItemAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const parsed = createAgendaItemSchema.safeParse({
     meetingId: formData.get("meetingId"),
@@ -45,7 +46,7 @@ export async function createAgendaItemAction(_prev: unknown, formData: FormData)
 
 export async function reorderAgendaItemsAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const orderedIds = (formData.get("orderedIds") as string | null)?.split(",") ?? [];
   const parsed = reorderAgendaItemsSchema.safeParse({
@@ -74,7 +75,7 @@ export async function reorderAgendaItemsAction(_prev: unknown, formData: FormDat
 
 export async function startAgendaItemAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const itemId = formData.get("itemId") as string;
   const adminClient = createAdminClient();
@@ -99,7 +100,7 @@ export async function startAgendaItemAction(_prev: unknown, formData: FormData) 
 
 export async function closeAgendaItemAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const parsed = closeItemSchema.safeParse({
     itemId: formData.get("itemId"),
@@ -155,7 +156,7 @@ export async function closeAgendaItemAction(_prev: unknown, formData: FormData) 
 
 export async function updateAgendaItemStatusAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const parsed = updateItemStatusSchema.safeParse({
     itemId: formData.get("itemId"),
@@ -228,7 +229,7 @@ export async function updateAgendaItemStatusAction(_prev: unknown, formData: For
 
 export async function deleteAgendaItemAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const itemId = formData.get("itemId") as string;
   const supabase = await createClient();

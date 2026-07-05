@@ -7,6 +7,7 @@ import { NotificationBell } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
 import type { Profile } from "@/types/domain";
 import { logoutAction } from "@/lib/auth/actions";
+import { canManageSenate } from "@/lib/auth/permissions";
 import { cn } from "@/lib/utils/cn";
 import { Avatar } from "@/components/ui";
 import { useUnreadNotifications } from "@/hooks/useUnreadNotifications";
@@ -41,7 +42,8 @@ const MOBILE_ADMIN_ITEMS = [
 
 export function Topbar({ profile }: TopbarProps) {
   const pathname = usePathname();
-  const title = getMobileTitle(pathname, profile.role === "admin");
+  const isManager = canManageSenate(profile);
+  const title = getMobileTitle(pathname, isManager);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const menuButtonRef = React.useRef<HTMLButtonElement>(null);
   const menuPanelRef = React.useRef<HTMLElement>(null);
@@ -150,8 +152,8 @@ function MobileNavigationDrawer({
   panelRef: React.RefObject<HTMLElement | null>;
   unreadNotifications: number;
 }) {
-  const isAdmin = profile.role === "admin";
-  const items = isAdmin ? MOBILE_ADMIN_ITEMS : MOBILE_NAV_ITEMS;
+  const isManager = canManageSenate(profile);
+  const items = isManager ? MOBILE_ADMIN_ITEMS : MOBILE_NAV_ITEMS;
 
   async function handleLogout() {
     onClose();

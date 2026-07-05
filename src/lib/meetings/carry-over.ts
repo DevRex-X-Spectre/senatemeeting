@@ -2,11 +2,12 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { requireActiveMember } from "@/lib/auth/guards";
+import { canManageSenate } from "@/lib/auth/permissions";
 import { carryOverSchema } from "@/lib/validations/meeting";
 
 export async function getCarryOverCandidates() {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return [];
+  if (!canManageSenate(profile)) return [];
 
   const supabase = await createClient();
 
@@ -49,7 +50,7 @@ export async function getCarryOverCandidates() {
 
 export async function carryOverToMeetingAction(input: { meetingId: string; itemIds: string[] }) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const parsed = carryOverSchema.safeParse(input);
   if (!parsed.success) return { ok: false, errors: parsed.error.flatten().fieldErrors };

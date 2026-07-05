@@ -11,6 +11,7 @@ import type {
   MinutesRow,
   MinutesAckRow,
   NotificationRow,
+  RoleChangeAuditRow,
 } from "./database";
 
 export type Profile = ProfileRow;
@@ -22,6 +23,7 @@ export type Attendance = AttendanceRow;
 export type Minutes = MinutesRow;
 export type MinutesAck = MinutesAckRow;
 export type Notification = NotificationRow;
+export type RoleChangeAudit = RoleChangeAuditRow;
 
 export type Role = ProfileRow["role"];
 export type MemberStatus = ProfileRow["status"];

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { logoutAction } from "@/lib/auth/actions";
+import { getRoleLabel } from "@/lib/auth/permissions";
 import { Avatar } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { Profile } from "@/types/domain";
@@ -36,7 +37,7 @@ export function UserMenu({ profile }: UserMenuProps) {
             {profile.full_name}
           </span>
           <span className="text-[11px] leading-none text-steel capitalize">
-            {profile.role}
+            {getRoleLabel(profile.role)}
           </span>
         </div>
         <ChevronDown className={cn("size-4 text-steel transition-transform", open && "rotate-180")} />

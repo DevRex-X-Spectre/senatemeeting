@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { requireActiveMember } from "@/lib/auth/guards";
+import { getRoleLabel } from "@/lib/auth/permissions";
 import { Card, CardContent, CardHeader, CardTitle, Badge, Avatar } from "@/components/ui";
 import { ProfileForm } from "@/components/auth/ProfileForm";
 
@@ -26,10 +27,10 @@ export default async function ProfilePage() {
             <p className="text-[16px] font-semibold text-graphite">{profile.full_name}</p>
             <p className="text-[14px] leading-[1.43] text-steel">{profile.email}</p>
             <Badge
-              tone={profile.role === "admin" ? "info" : "neutral"}
+              tone={profile.role === "admin" || profile.role === "secretary" ? "info" : "neutral"}
               className="mt-1 w-fit capitalize"
             >
-              {profile.role}
+              {getRoleLabel(profile.role)}
             </Badge>
           </div>
         </CardContent>

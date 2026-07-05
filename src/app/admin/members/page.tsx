@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/guards";
+import { canManageRoles, getRoleLabel } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Card, CardContent, Badge, Avatar, EmptyState } from "@/components/ui";
 import { formatDateTime } from "@/lib/utils/dates";
 import { Users } from "lucide-react";
-import { ApproveButton, RejectButton, SuspendButton } from "@/components/admin/members/ApprovalActions";
+import { ApproveButton, RejectButton, RoleButton, SuspendButton } from "@/components/admin/members/ApprovalActions";
+import type { Role } from "@/types/domain";
 
 export const metadata: Metadata = { title: "Members" };
 
@@ -14,14 +16,15 @@ type MemberRow = {
   email: string;
   avatar_url?: string | null;
   status: "pending" | "active" | "suspended";
-  role: string;
+  role: Role;
   created_at: string;
   approved_at?: string | null;
   approved_by?: string | null;
 };
 
 export default async function MembersPage() {
-  await requireAdmin();
+  const currentProfile = await requireAdmin();
+  const canAssignRoles = canManageRoles(currentProfile);
   const adminClient = createAdminClient();
 
   const { data: profilesRaw, error: profilesError } = await adminClient
@@ -45,7 +48,7 @@ export default async function MembersPage() {
           Members
         </h1>
         <p className="max-w-2xl text-[16px] leading-[1.5] text-steel">
-          Review new accounts, manage active members, and handle suspensions.
+          Review new accounts, manage active members, handle suspensions, and delegate secretary operations.
         </p>
       </div>
 
@@ -97,7 +100,9 @@ export default async function MembersPage() {
                     <div className="space-y-0.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="text-[16px] font-medium text-graphite">{p.full_name}</p>
-                        {p.role === "admin" ? <Badge tone="info" size="sm">Admin</Badge> : null}
+                        {p.role === "admin" || p.role === "secretary" ? (
+                          <Badge tone="info" size="sm">{getRoleLabel(p.role)}</Badge>
+                        ) : null}
                       </div>
                       <p className="text-[14px] leading-[1.43] text-steel">{p.email}</p>
                       {p.approved_at ? (
@@ -107,7 +112,17 @@ export default async function MembersPage() {
                       ) : null}
                     </div>
                   </div>
-                  {p.role !== "admin" ? <SuspendButton userId={p.id} /> : null}
+                  <div className="grid grid-cols-1 gap-2 sm:flex sm:items-center">
+                    {canAssignRoles && p.role === "member" ? (
+                      <RoleButton userId={p.id} role="secretary" label="Make secretary" />
+                    ) : null}
+                    {canAssignRoles && p.role === "secretary" ? (
+                      <RoleButton userId={p.id} role="member" label="Remove secretary" />
+                    ) : null}
+                    {p.role !== "admin" && (p.role !== "secretary" || canAssignRoles) ? (
+                      <SuspendButton userId={p.id} />
+                    ) : null}
+                  </div>
                 </CardContent>
               </Card>
             ))}

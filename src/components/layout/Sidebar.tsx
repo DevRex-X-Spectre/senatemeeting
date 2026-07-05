@@ -12,6 +12,7 @@ import {
   University,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { canManageSenate } from "@/lib/auth/permissions";
 import type { Profile } from "@/types/domain";
 
 const NAV_ITEMS = [
@@ -34,8 +35,8 @@ interface SidebarProps {
 
 export function Sidebar({ profile }: SidebarProps) {
   const pathname = usePathname();
-  const isAdmin = profile.role === "admin";
-  const items = isAdmin ? ADMIN_ITEMS : NAV_ITEMS;
+  const isManager = canManageSenate(profile);
+  const items = isManager ? ADMIN_ITEMS : NAV_ITEMS;
 
   return (
     <aside

@@ -4,13 +4,14 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createMeetingSchema, updateMeetingSchema } from "@/lib/validations/meeting";
 import { requireActiveMember } from "@/lib/auth/guards";
+import { canManageSenate } from "@/lib/auth/permissions";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { actionError, validationError, withTimeout, type ActionResult } from "@/lib/supabase/errors";
 
 export async function createMeetingAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const parsed = createMeetingSchema.safeParse({
     title: formData.get("title"),
@@ -54,7 +55,7 @@ export async function updateMeetingAction(
   },
 ): Promise<ActionResult> {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const parsed = updateMeetingSchema.safeParse(input);
   if (!parsed.success) return validationError(parsed.error.flatten().fieldErrors);
@@ -82,7 +83,7 @@ export async function updateMeetingAction(
 
 export async function publishAgendaAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const meetingId = formData.get("meetingId") as string;
   const adminClient = createAdminClient();
@@ -150,7 +151,7 @@ export async function publishAgendaAction(_prev: unknown, formData: FormData): P
 
 export async function startMeetingAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const meetingId = formData.get("meetingId") as string;
   const adminClient = createAdminClient();
@@ -205,7 +206,7 @@ export async function startMeetingAction(_prev: unknown, formData: FormData): Pr
 
 export async function endMeetingAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const meetingId = formData.get("meetingId") as string;
   const adminClient = createAdminClient();
@@ -246,7 +247,7 @@ export async function endMeetingAction(_prev: unknown, formData: FormData): Prom
 
 export async function cancelMeetingAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const meetingId = formData.get("meetingId") as string;
   const supabase = await createClient();

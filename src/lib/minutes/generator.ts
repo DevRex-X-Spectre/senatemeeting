@@ -3,12 +3,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireActiveMember } from "@/lib/auth/guards";
+import { canManageSenate } from "@/lib/auth/permissions";
 import { updateMinutesSchema } from "@/lib/validations/minutes";
 import { formatDateTime } from "@/lib/utils/dates";
 
 export async function generateMinutesAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const meetingId = formData.get("meetingId") as string;
   const adminClient = createAdminClient();
@@ -96,7 +97,7 @@ export async function generateMinutesAction(_prev: unknown, formData: FormData) 
 
 export async function updateMinutesAction(input: { meetingId: string; body: string }) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const parsed = updateMinutesSchema.safeParse(input);
   if (!parsed.success) return { ok: false, errors: parsed.error.flatten().fieldErrors };
@@ -113,7 +114,7 @@ export async function updateMinutesAction(input: { meetingId: string; body: stri
 
 export async function publishMinutesAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const meetingId = formData.get("meetingId") as string;
   const adminClient = createAdminClient();
@@ -143,8 +144,8 @@ export async function publishMinutesAction(_prev: unknown, formData: FormData) {
 
   if (members?.length) {
     await adminClient.from("notifications").insert(
-      members.map((m: any) => ({
-        user_id: m.id,
+      members.map((member: { id: string }) => ({
+        user_id: member.id,
         kind: "minutes_published",
         title: "Minutes published",
         body: `Minutes for "${meeting?.title ?? "a meeting"}" are ready to review and acknowledge.`,

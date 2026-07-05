@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ToastProvider } from "@/components/ui";
 import { Sidebar, Topbar } from "@/components/layout";
 import { requireProfile } from "@/lib/auth/session";
+import { canManageSenate } from "@/lib/auth/permissions";
 
 export const metadata: Metadata = { title: "Loading…" };
 
@@ -11,7 +12,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (p.status === "pending") redirect("/pending-approval");
   if (p.status === "suspended") redirect("/suspended");
-  if (p.role !== "admin") redirect("/dashboard");
+  if (!canManageSenate(p)) redirect("/dashboard");
 
   return (
     <ToastProvider>

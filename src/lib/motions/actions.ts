@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { raiseMotionSchema, voteSchema, decideMotionSchema } from "@/lib/validations/motion";
 import { requireActiveMember } from "@/lib/auth/guards";
-import type { Motion, Vote, VoteTally } from "@/types/domain";
+import { canManageSenate } from "@/lib/auth/permissions";
+import type { Motion, VoteTally } from "@/types/domain";
 
 export async function raiseMotionAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
@@ -37,7 +38,7 @@ export async function raiseMotionAction(_prev: unknown, formData: FormData) {
     .single();
 
   if (error) return { ok: false, error: error.message };
-  return { ok: true, motionId: (data as any).id };
+  return { ok: true, motionId: data.id };
 }
 
 export async function secondMotionAction(_prev: unknown, formData: FormData) {
@@ -70,8 +71,8 @@ export async function secondMotionAction(_prev: unknown, formData: FormData) {
 
     if (members?.length) {
       await adminClient.from("notifications").insert(
-        members.map((m: any) => ({
-          user_id: m.id,
+        members.map((member: { id: string }) => ({
+          user_id: member.id,
           kind: "motion_seconded",
           title: "Motion seconded",
           body: `Motion "${motion.text.slice(0, 60)}" has been seconded and will move to vote.`,
@@ -102,7 +103,7 @@ export async function withdrawMotionAction(_prev: unknown, formData: FormData) {
 
 export async function openVoteAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const motionId = formData.get("motionId") as string;
   const adminClient = createAdminClient();
@@ -132,8 +133,8 @@ export async function openVoteAction(_prev: unknown, formData: FormData) {
 
     if (members?.length) {
       await adminClient.from("notifications").insert(
-        members.map((m: any) => ({
-          user_id: m.id,
+        members.map((member: { id: string }) => ({
+          user_id: member.id,
           kind: "vote_opened",
           title: "Vote opened",
           body: `A motion, "${motion.text.slice(0, 60)}", is open for voting. Cast your vote now.`,
@@ -172,7 +173,7 @@ export async function voteAction(_prev: unknown, formData: FormData) {
 
 export async function decideMotionAction(_prev: unknown, formData: FormData) {
   const profile = await requireActiveMember();
-  if (profile.role !== "admin") return { ok: false, error: "Admin access required." };
+  if (!canManageSenate(profile)) return { ok: false, error: "Senate manager access required." };
 
   const parsed = decideMotionSchema.safeParse({
     motionId: formData.get("motionId"),

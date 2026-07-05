@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { useActionState } from "react";
-import { approveMemberAction, suspendMemberAction } from "@/lib/auth/guards";
+import { approveMemberAction, assignMemberRoleAction, suspendMemberAction } from "@/lib/auth/guards";
 import { Button } from "@/components/ui";
-import { CheckCircle2, ShieldOff, XCircle } from "lucide-react";
+import { CheckCircle2, ShieldCheck, ShieldOff, UserRound, XCircle } from "lucide-react";
 
 export function ApproveButton({ userId, label }: { userId: string; label?: string }) {
   const [state, formAction, pending] = useActionState(approveMemberAction, null);
@@ -57,6 +57,36 @@ export function RejectButton({ userId }: { userId: string }) {
         className="gap-1.5 border-danger text-danger hover:bg-danger-soft"
       >
         <XCircle className="size-4" /> Reject
+      </Button>
+      {state?.error ? <p className="text-[12px] text-danger">{state.error}</p> : null}
+    </form>
+  );
+}
+
+export function RoleButton({
+  userId,
+  role,
+  label,
+}: {
+  userId: string;
+  role: "member" | "secretary";
+  label: string;
+}) {
+  const [state, formAction, pending] = useActionState(assignMemberRoleAction, null);
+  const Icon = role === "secretary" ? ShieldCheck : UserRound;
+
+  return (
+    <form action={formAction} className="flex flex-col gap-1">
+      <input type="hidden" name="userId" value={userId} />
+      <input type="hidden" name="role" value={role} />
+      <Button
+        type="submit"
+        variant="outline"
+        size="sm"
+        loading={pending}
+        className="gap-1.5"
+      >
+        <Icon className="size-4" /> {label}
       </Button>
       {state?.error ? <p className="text-[12px] text-danger">{state.error}</p> : null}
     </form>

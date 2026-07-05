@@ -23,7 +23,7 @@ export async function proxy(request: NextRequest) {
 
   if (user) {
     const claims = (user.app_metadata ?? {}) as {
-      role?: "admin" | "member";
+      role?: "admin" | "secretary" | "member";
       status?: "pending" | "active" | "suspended";
     };
     const role = claims.role ?? "member";
@@ -43,7 +43,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    if (pathname.startsWith(ADMIN_PREFIX) && role !== "admin") {
+    if (pathname.startsWith(ADMIN_PREFIX) && role !== "admin" && role !== "secretary") {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
       url.search = "";

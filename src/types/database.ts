@@ -18,7 +18,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type UserRole = "admin" | "member";
+export type UserRole = "admin" | "secretary" | "member";
 export type MemberStatus = "pending" | "active" | "suspended";
 export type MeetingStatus =
   | "draft"
@@ -49,7 +49,8 @@ export type NotificationKind =
   | "motion_seconded"
   | "item_resolved"
   | "approval_granted"
-  | "approval_pending";
+  | "approval_pending"
+  | "role_changed";
 
 export interface ProfileRow {
   id: string;
@@ -152,6 +153,15 @@ export interface NotificationRow {
   created_at: string;
 }
 
+export interface RoleChangeAuditRow {
+  id: string;
+  actor_id: string;
+  target_user_id: string;
+  old_role: UserRole;
+  new_role: UserRole;
+  created_at: string;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyInsert = Record<string, any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -169,6 +179,7 @@ export interface Database {
       minutes: { Row: MinutesRow; Insert: AnyInsert; Update: AnyUpdate };
       minutes_acknowledgments: { Row: MinutesAckRow; Insert: AnyInsert; Update: AnyUpdate };
       notifications: { Row: NotificationRow; Insert: AnyInsert; Update: AnyUpdate };
+      role_change_audit: { Row: RoleChangeAuditRow; Insert: AnyInsert; Update: AnyUpdate };
     };
     Views: {
       meeting_quorum: { Row: { meeting_id: string; denominator: number; present: number; quorum_met: boolean } };

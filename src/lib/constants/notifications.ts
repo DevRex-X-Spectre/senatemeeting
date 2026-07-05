@@ -38,4 +38,8 @@ export const notificationCopy: Record<NotificationKind, NotificationCopy> = {
     title: "Account under review",
     body: "Your account is awaiting administrator approval.",
   },
+  role_changed: {
+    title: "Role updated",
+    body: "Your UniSenate role has been updated.",
+  },
 };

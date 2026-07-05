@@ -129,7 +129,7 @@ async function notifyAdminsAboutRegistration(member: { fullName: string; email: 
     adminClient
     .from("profiles")
     .select("id")
-    .eq("role", "admin")
+    .in("role", ["admin", "secretary"])
       .eq("status", "active"),
     "Admin notification recipient lookup",
   ).catch(() => ({ data: null }));
