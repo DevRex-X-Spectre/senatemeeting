@@ -32,7 +32,7 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-4xl space-y-6 py-6 sm:space-y-8 sm:py-8">
       <div className="space-y-2">
         <h1 className="text-[32px] font-bold leading-[1.14] tracking-[-0.025em] text-graphite sm:text-[40px]">
-          Good {getTimeOfDay()}, {profile.full_name.split(" ")[0]}.
+          Welcome back.
         </h1>
         <p className="max-w-2xl text-[16px] leading-[1.5] text-steel">
           Here is a quick view of your upcoming meetings and any minutes that still need your review.
@@ -119,11 +119,4 @@ export default async function DashboardPage() {
       ) : null}
     </div>
   );
-}
-
-function getTimeOfDay() {
-  const h = new Date().getHours();
-  if (h < 12) return "morning";
-  if (h < 17) return "afternoon";
-  return "evening";
 }

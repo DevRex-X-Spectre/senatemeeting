@@ -55,6 +55,7 @@ export type NotificationKind =
 export interface ProfileRow {
   id: string;
   email: string;
+  staff_id: string | null;
   full_name: string;
   role: UserRole;
   status: MemberStatus;

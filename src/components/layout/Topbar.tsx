@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AppLogo } from "./AppLogo";
 import { NotificationBell } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
 import type { Profile } from "@/types/domain";
@@ -66,28 +67,26 @@ export function Topbar({ profile }: TopbarProps) {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-fog-border bg-pure-white/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 w-full border-b border-signal-blue bg-signal-blue text-pure-white backdrop-blur-xl">
       <div className="flex h-[68px] items-center justify-between gap-3 px-4 sm:h-18 sm:px-6 lg:h-20 lg:px-8">
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2 sm:hidden">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-graphite bg-graphite text-pure-white shadow-card">
-              <University className="size-[18px]" />
-            </div>
+            <AppLogo className="size-10 border border-pure-white/70 shadow-card" priority />
             <div className="min-w-0 leading-tight">
-              <span className="block text-[11px] font-semibold uppercase text-steel">
-                UniSenate
+              <span className="block text-[11px] font-semibold uppercase text-pure-white/75">
+                NaubSenate
               </span>
-              <span className="block truncate text-[16px] font-bold text-graphite">
+              <span className="block truncate text-[16px] font-bold text-pure-white">
                 {title}
               </span>
             </div>
           </div>
           <div className="hidden flex-col leading-tight sm:flex">
-            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-steel">
-              UniSenate
+            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-pure-white/75">
+              NaubSenate
             </span>
-            <span className="text-[15px] font-semibold tracking-[-0.025em] text-graphite">
-              Senate workspace
+            <span className="text-[15px] font-semibold tracking-[-0.025em] text-pure-white">
+              NAUB senate workspace
             </span>
           </div>
         </div>
@@ -103,7 +102,7 @@ export function Topbar({ profile }: TopbarProps) {
             ref={menuButtonRef}
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            className="inline-flex size-10 items-center justify-center rounded-md border border-fog-border bg-pure-white text-graphite shadow-card transition-colors hover:bg-plaster sm:hidden"
+            className="inline-flex size-10 items-center justify-center rounded-lg border border-pure-white/35 bg-pure-white text-signal-blue shadow-card transition-colors hover:bg-warning-soft sm:hidden"
             aria-label="Open navigation menu"
             aria-expanded={menuOpen}
           >
@@ -184,7 +183,9 @@ function MobileNavigationDrawer({
           <Avatar name={profile.full_name} src={profile.avatar_url} size="md" />
           <div className="min-w-0">
             <p className="truncate text-[14px] font-semibold text-graphite">{profile.full_name}</p>
-            <p className="break-all text-[12px] text-steel">{profile.email}</p>
+            <p className="break-all text-[12px] text-steel">
+              {profile.staff_id ? `Staff ID: ${profile.staff_id}` : profile.email}
+            </p>
           </div>
         </div>
         <ul className="border-b border-fog-border p-2">

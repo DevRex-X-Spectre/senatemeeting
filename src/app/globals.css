@@ -1,55 +1,55 @@
 @import "tailwindcss";
 
 /* ============================================================
-   UniSenate — Design System Tokens (Calendly-style)
+   NaubSenate — Design System Tokens
    Tokens map directly to Tailwind v4 utility classes via @theme.
    Reference: SKILLS/DESIGN.md
    ============================================================ */
 
 @theme {
   /* Colors */
-  --color-midnight-navy: #0b3558;
-  --color-signal-blue: #006bff;
-  --color-slate-blue: #476788;
-  --color-steel: #476788;
-  --color-carbon: #0a0a0a;
-  --color-graphite: #0a0a0a;
-  --color-charcoal: #1f2933;
+  --color-midnight-navy: #294d5a;
+  --color-signal-blue: #e60000;
+  --color-slate-blue: #58666b;
+  --color-steel: #58666b;
+  --color-carbon: #1b2c31;
+  --color-graphite: #294d5a;
+  --color-charcoal: #1f3d47;
   --color-ink-black: #000000;
   --color-paper: #ffffff;
   --color-pure-white: #ffffff;
-  --color-mist: #f8f9fb;
-  --color-fog: #e7edf6;
-  --color-plaster: #f8f9fb;
-  --color-mist-border: #d4e0ed;
-  --color-fog-border: #d4e0ed;
-  --color-silver: #e6e6e6;
-  --color-steel-blue: #a6bbd1;
-  --color-info-blue: #004eba;
+  --color-mist: #f4f8fa;
+  --color-fog: #e5edf0;
+  --color-plaster: #f7fafb;
+  --color-mist-border: #d4e0e4;
+  --color-fog-border: #d4e0e4;
+  --color-silver: #e5ecef;
+  --color-steel-blue: #9fb2b9;
+  --color-info-blue: #294d5a;
   --color-prismic-violet: #8e44ec;
-  --color-prismic-blue: #59b5f8;
-  --color-prismic-green: #3bbb96;
+  --color-prismic-blue: #294d5a;
+  --color-prismic-green: #294d5a;
   --color-lavender-wash: #e8c7ff;
   --color-lavender-cream: #f5e6ff;
   --color-sky-wash: #c3eefe;
   --color-peach-wash: #fcdac4;
   --color-peach-cream: #fef1e9;
-  --color-mint-wash: #d4f2e9;
-  --color-mint-cream: #e8f8f3;
+  --color-mint-wash: #d9e5e9;
+  --color-mint-cream: #edf4f6;
   --color-magenta-bloom: #e55cff;
   --color-ultraviolet: #8247f5;
   --color-amber-spark: #ffa600;
   --color-cyan-pop: #0099ff;
 
-  /* Semantic state colors — kept blue-tinted and on-brand */
-  --color-success: #047a5b;
-  --color-success-soft: #d6f1e8;
-  --color-warning: #b54708;
-  --color-warning-soft: #fef0e7;
+  /* Semantic state colors */
+  --color-success: #294d5a;
+  --color-success-soft: #e7f0f3;
+  --color-warning: #b8860b;
+  --color-warning-soft: #fff4cf;
   --color-danger: #b42318;
   --color-danger-soft: #fee4e2;
-  --color-pending: #476788;
-  --color-pending-soft: #e7edf6;
+  --color-pending: #4f6759;
+  --color-pending-soft: #e8f0e9;
 
   /* Font families */
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system,
@@ -170,10 +170,10 @@ body {
     z-index: -1;
     pointer-events: none;
     background-image:
-      linear-gradient(rgba(212, 224, 237, 0.58) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(212, 224, 237, 0.58) 1px, transparent 1px),
-      radial-gradient(circle at 18% 12%, rgba(59, 187, 150, 0.08), transparent 30%),
-      radial-gradient(circle at 85% 18%, rgba(0, 107, 255, 0.055), transparent 28%);
+      linear-gradient(rgba(41, 77, 90, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(41, 77, 90, 0.16) 1px, transparent 1px),
+      radial-gradient(circle at 18% 12%, rgba(41, 77, 90, 0.09), transparent 30%),
+      radial-gradient(circle at 85% 18%, rgba(230, 0, 0, 0.055), transparent 28%);
     background-size: 36px 36px, 36px 36px, 100% 100%, 100% 100%;
     background-position: -1px -1px, -1px -1px, 0 0, 0 0;
   }
@@ -184,7 +184,7 @@ body {
     z-index: -1;
     pointer-events: none;
     background:
-      linear-gradient(to bottom, rgba(248, 249, 251, 0.72), rgba(248, 249, 251, 0.9)),
+      linear-gradient(to bottom, rgba(244, 248, 250, 0.72), rgba(244, 248, 250, 0.9)),
       radial-gradient(circle at 50% 8%, rgba(255, 255, 255, 0.8), transparent 38%);
   }
   .text-balance {
@@ -210,10 +210,10 @@ body {
   }
 
   .landing-grid-bg {
-    background-color: var(--color-pure-white);
+    background-color: var(--color-mist);
     background-image:
-      linear-gradient(rgba(166, 187, 209, 0.92) 1.4px, transparent 1.4px),
-      linear-gradient(90deg, rgba(166, 187, 209, 0.92) 1.4px, transparent 1.4px);
+      linear-gradient(rgba(41, 77, 90, 0.2) 1.4px, transparent 1.4px),
+      linear-gradient(90deg, rgba(41, 77, 90, 0.2) 1.4px, transparent 1.4px);
     background-size: 44px 44px;
   }
 
@@ -222,8 +222,8 @@ body {
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(59, 187, 150, 0.12) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(59, 187, 150, 0.12) 1px, transparent 1px);
+      linear-gradient(rgba(41, 77, 90, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(41, 77, 90, 0.1) 1px, transparent 1px);
     background-size: 220px 220px;
   }
 
@@ -241,7 +241,7 @@ body {
     width: 360px;
     height: 360px;
     border-radius: 9999px;
-    background: radial-gradient(circle, rgba(59, 187, 150, 0.2), transparent 66%);
+    background: radial-gradient(circle, rgba(41, 77, 90, 0.18), transparent 66%);
     filter: blur(8px);
   }
 
@@ -262,7 +262,7 @@ body {
     top: 0;
     width: 44px;
     height: 100%;
-    filter: drop-shadow(0 0 14px rgba(59, 187, 150, 0.5));
+    filter: drop-shadow(0 0 14px rgba(41, 77, 90, 0.5));
   }
 
   .landing-snake-segment {
@@ -275,8 +275,8 @@ body {
     background: var(--color-prismic-green);
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.9) inset,
-      0 0 18px rgba(59, 187, 150, 0.72),
-      0 0 34px rgba(59, 187, 150, 0.38);
+      0 0 18px rgba(41, 77, 90, 0.72),
+      0 0 34px rgba(41, 77, 90, 0.38);
     animation: landing-snake-run 6.8s linear infinite;
   }
 
@@ -287,8 +287,8 @@ body {
     background: var(--color-pure-white);
     border: 2px solid var(--color-prismic-green);
     box-shadow:
-      0 0 0 4px rgba(59, 187, 150, 0.14),
-      0 0 24px rgba(59, 187, 150, 0.88);
+      0 0 0 4px rgba(41, 77, 90, 0.14),
+      0 0 24px rgba(41, 77, 90, 0.88);
   }
 }
 

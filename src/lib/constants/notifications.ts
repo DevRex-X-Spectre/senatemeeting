@@ -40,6 +40,6 @@ export const notificationCopy: Record<NotificationKind, NotificationCopy> = {
   },
   role_changed: {
     title: "Role updated",
-    body: "Your UniSenate role has been updated.",
+    body: "Your NaubSenate role has been updated.",
   },
 };

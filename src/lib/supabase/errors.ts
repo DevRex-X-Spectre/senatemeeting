@@ -69,7 +69,7 @@ export function mapSupabaseError(error: unknown, fallback = "Something went wron
   if (normalized.includes("invalid login credentials") || normalized.includes("invalid credentials")) {
     return {
       kind: "auth_bad_credentials",
-      message: "The email or password is incorrect.",
+      message: "The staff ID/email or password is incorrect.",
       code,
       details,
     };

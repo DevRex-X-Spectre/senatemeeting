@@ -6,6 +6,7 @@ import { Card, CardContent, Badge, Avatar, EmptyState } from "@/components/ui";
 import { formatDateTime } from "@/lib/utils/dates";
 import { Users } from "lucide-react";
 import { ApproveButton, RejectButton, RoleButton, SuspendButton } from "@/components/admin/members/ApprovalActions";
+import { CreateMemberCredentialsForm } from "@/components/admin/members/CreateMemberCredentialsForm";
 import type { Role } from "@/types/domain";
 
 export const metadata: Metadata = { title: "Members" };
@@ -14,6 +15,7 @@ type MemberRow = {
   id: string;
   full_name: string;
   email: string;
+  staff_id?: string | null;
   avatar_url?: string | null;
   status: "pending" | "active" | "suspended";
   role: Role;
@@ -33,7 +35,7 @@ export default async function MembersPage() {
     .order("created_at", { ascending: false });
 
   if (profilesError) {
-    throw new Error(`Could not load member registrations: ${profilesError.message}`);
+    throw new Error(`Could not load member accounts: ${profilesError.message}`);
   }
 
   const profiles = (profilesRaw ?? []) as MemberRow[];
@@ -48,16 +50,18 @@ export default async function MembersPage() {
           Members
         </h1>
         <p className="max-w-2xl text-[16px] leading-[1.5] text-steel">
-          Review new accounts, manage active members, handle suspensions, and delegate secretary operations.
+          Create staff-ID logins, manage active senate members, and delegate secretary operations.
         </p>
       </div>
 
+      <CreateMemberCredentialsForm />
+
       <section className="space-y-4">
         <h2 className="text-[22px] font-semibold leading-[1.38] tracking-[-0.025em] text-graphite">
-          Pending approval ({pending.length})
+          Pending legacy accounts ({pending.length})
         </h2>
         {pending.length === 0 ? (
-          <p className="text-[14px] leading-[1.43] text-steel">No pending members.</p>
+          <p className="text-[14px] leading-[1.43] text-steel">No pending legacy accounts.</p>
         ) : (
           <div className="flex flex-col gap-3">
             {pending.map((p) => (
@@ -67,7 +71,9 @@ export default async function MembersPage() {
                     <Avatar name={p.full_name} src={p.avatar_url} />
                     <div className="space-y-0.5">
                       <p className="text-[16px] font-medium text-graphite">{p.full_name}</p>
-                      <p className="text-[14px] leading-[1.43] text-steel">{p.email}</p>
+                      <p className="text-[14px] leading-[1.43] text-steel">
+                        {p.staff_id ? `Staff ID: ${p.staff_id}` : p.email}
+                      </p>
                       <p className="text-[14px] leading-[1.43] text-steel">
                         Registered {formatDateTime(p.created_at)}
                       </p>
@@ -104,7 +110,9 @@ export default async function MembersPage() {
                           <Badge tone="info" size="sm">{getRoleLabel(p.role)}</Badge>
                         ) : null}
                       </div>
-                      <p className="text-[14px] leading-[1.43] text-steel">{p.email}</p>
+                      <p className="text-[14px] leading-[1.43] text-steel">
+                        {p.staff_id ? `Staff ID: ${p.staff_id}` : p.email}
+                      </p>
                       {p.approved_at ? (
                         <p className="text-[14px] leading-[1.43] text-steel">
                           Approved {formatDateTime(p.approved_at)}
@@ -143,7 +151,9 @@ export default async function MembersPage() {
                     <Avatar name={p.full_name} src={p.avatar_url} />
                     <div className="space-y-0.5">
                       <p className="text-[16px] font-medium text-graphite">{p.full_name}</p>
-                      <p className="text-[14px] leading-[1.43] text-steel">{p.email}</p>
+                      <p className="text-[14px] leading-[1.43] text-steel">
+                        {p.staff_id ? `Staff ID: ${p.staff_id}` : p.email}
+                      </p>
                     </div>
                   </div>
                   <ApproveButton userId={p.id} label="Reactivate" />

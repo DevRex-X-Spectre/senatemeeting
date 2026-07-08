@@ -3,7 +3,7 @@ import { AgendaBuilderClient } from "./AgendaBuilderClient";
 import { getAgendaItems } from "@/lib/meetings/queries";
 
 export const metadata: Metadata = {
-  title: "Build agenda | UniSenate",
+  title: "Build agenda | NaubSenate",
 };
 
 export default async function AgendaBuilderPage({

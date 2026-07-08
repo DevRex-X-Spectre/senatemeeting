@@ -16,7 +16,7 @@ export default function SuspendedPage() {
         </CardHeader>
         <CardContent>
           <p className="text-[15px] text-slate-blue">
-            Your account has been suspended and you no longer have access to UniSenate.
+            Your account has been suspended and you no longer have access to NaubSenate.
             Contact the administrator if you believe this is an error.
           </p>
         </CardContent>

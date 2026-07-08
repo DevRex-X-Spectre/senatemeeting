@@ -1,4 +1,4 @@
-# UniSenate — Setup Guide
+# NaubSenate — Setup Guide
 
 ## Prerequisites
 

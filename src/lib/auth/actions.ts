@@ -1,9 +1,16 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { loginSchema, registerSchema, updateProfileSchema } from "@/lib/validations/auth";
+import { revalidatePath } from "next/cache";
+import {
+  changePasswordSchema,
+  createMemberCredentialsSchema,
+  loginSchema,
+  updateProfileSchema,
+} from "@/lib/validations/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { requireSenateManager } from "@/lib/auth/guards";
 import { requireProfile } from "@/lib/auth/session";
 import {
   actionError,
@@ -14,9 +21,11 @@ import {
   type ActionResult,
 } from "@/lib/supabase/errors";
 
+const STAFF_AUTH_DOMAIN = "members.unisenate.local";
+
 export async function loginAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
   const parsed = loginSchema.safeParse({
-    email: formData.get("email"),
+    identifier: formData.get("identifier"),
     password: formData.get("password"),
   });
 
@@ -24,10 +33,17 @@ export async function loginAction(_prev: unknown, formData: FormData): Promise<A
     return validationError(parsed.error.flatten().fieldErrors);
   }
 
+  const loginEmail = await resolveLoginEmail(parsed.data.identifier);
+  if (!loginEmail) {
+    return validationError({
+      identifier: ["This staff ID is not registered."],
+    });
+  }
+
   const supabase = await createClient();
   const { error } = await withTimeout(
     supabase.auth.signInWithPassword({
-      email: parsed.data.email,
+      email: loginEmail,
       password: parsed.data.password,
     }),
     "Sign in",
@@ -38,52 +54,101 @@ export async function loginAction(_prev: unknown, formData: FormData): Promise<A
   }));
 
   if (error) {
-    return validationError({ email: [mapSupabaseError(error, "Could not sign in. Please try again.").message] });
+    return validationError({ identifier: [mapSupabaseError(error, "Could not sign in. Please try again.").message] });
   }
 
   redirect("/dashboard");
 }
 
-export async function registerAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
-  const parsed = registerSchema.safeParse({
+export async function createMemberCredentialsAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
+  const manager = await requireSenateManager();
+
+  const parsed = createMemberCredentialsSchema.safeParse({
     fullName: formData.get("fullName"),
-    email: formData.get("email"),
+    staffId: formData.get("staffId"),
     password: formData.get("password"),
-    confirmPassword: formData.get("confirmPassword"),
+    title: formData.get("title") || undefined,
   });
 
   if (!parsed.success) {
     return validationError(parsed.error.flatten().fieldErrors);
   }
 
-  const supabase = await createClient();
-  const { data, error } = await withTimeout(
-    supabase.auth.signUp({
-      email: parsed.data.email,
-      password: parsed.data.password,
-      options: {
-        data: { full_name: parsed.data.fullName },
-      },
-    }),
-    "Register account",
-    SUPABASE_AUTH_TIMEOUT_MS,
-  ).catch((error: unknown) => ({
-    data: { user: null, session: null },
-    error,
-  }));
+  const staffId = normalizeStaffId(parsed.data.staffId);
+  const internalEmail = internalStaffEmail(staffId);
+  const adminClient = createAdminClient();
 
-  if (error) {
-    return validationError({ email: [mapSupabaseError(error, "Could not create your account. Please try again.").message] });
+  const { data: existingProfile, error: existingProfileError } = await withTimeout(
+    adminClient
+      .from("profiles")
+      .select("id")
+      .eq("staff_id", staffId)
+      .maybeSingle(),
+    "Staff ID lookup",
+  );
+
+  if (existingProfileError) {
+    return actionError(existingProfileError, "Could not verify this staff ID.");
   }
 
-  if (data.user) {
-    await notifyAdminsAboutRegistration({
-      fullName: parsed.data.fullName,
-      email: parsed.data.email,
+  if (existingProfile) {
+    return validationError({ staffId: ["This staff ID is already registered."] });
+  }
+
+  const { data: createdUser, error: createError } = await withTimeout(
+    adminClient.auth.admin.createUser({
+      email: internalEmail,
+      password: parsed.data.password,
+      email_confirm: true,
+      user_metadata: {
+        full_name: parsed.data.fullName,
+        staff_id: staffId,
+      },
+      app_metadata: {
+        role: "member",
+        status: "pending",
+      },
+    }),
+    "Create staff credentials",
+    SUPABASE_AUTH_TIMEOUT_MS,
+  );
+
+  if (createError || !createdUser.user) {
+    return validationError({
+      staffId: [mapSupabaseError(createError, "Could not create this member credential.").message],
     });
   }
 
-  redirect("/pending-approval?registered=1");
+  const { error: profileError } = await withTimeout(
+    adminClient
+      .from("profiles")
+      .update({
+        email: internalEmail,
+        staff_id: staffId,
+        full_name: parsed.data.fullName,
+        title: parsed.data.title ?? null,
+        approved_by: manager.id,
+      })
+      .eq("id", createdUser.user.id),
+    "Update staff profile",
+  );
+
+  if (profileError) {
+    return actionError(profileError, "The auth account was created, but the member profile could not be prepared.");
+  }
+
+  const supabase = await createClient();
+  const { error: approvalError } = await withTimeout(
+    supabase.rpc("approve_member", { p_user_id: createdUser.user.id }),
+    "Activate staff credential",
+  );
+
+  if (approvalError) {
+    return actionError(approvalError, "The member was created, but could not be activated.");
+  }
+
+  revalidatePath("/admin/members");
+  return { ok: true };
 }
 
 export async function logoutAction() {
@@ -123,25 +188,76 @@ export async function updateProfileAction(_prev: unknown, formData: FormData): P
   return { ok: true };
 }
 
-async function notifyAdminsAboutRegistration(member: { fullName: string; email: string }) {
+export async function changePasswordAction(_prev: unknown, formData: FormData): Promise<ActionResult> {
+  const profile = await requireProfile();
+  const parsed = changePasswordSchema.safeParse({
+    currentPassword: formData.get("currentPassword"),
+    newPassword: formData.get("newPassword"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+
+  if (!parsed.success) {
+    return validationError(parsed.error.flatten().fieldErrors);
+  }
+
+  const supabase = await createClient();
+  const { error: verifyError } = await withTimeout(
+    supabase.auth.signInWithPassword({
+      email: profile.email,
+      password: parsed.data.currentPassword,
+    }),
+    "Verify current password",
+    SUPABASE_AUTH_TIMEOUT_MS,
+  ).catch((error: unknown) => ({
+    data: { user: null, session: null },
+    error,
+  }));
+
+  if (verifyError) {
+    return validationError({
+      currentPassword: ["Current password is incorrect."],
+    });
+  }
+
+  const { error } = await withTimeout(
+    supabase.auth.updateUser({ password: parsed.data.newPassword }),
+    "Change password",
+    SUPABASE_AUTH_TIMEOUT_MS,
+  );
+
+  if (error) {
+    return actionError(error, "Could not change your password.");
+  }
+
+  return { ok: true };
+}
+
+async function resolveLoginEmail(identifier: string) {
+  const value = identifier.trim();
+  if (value.includes("@")) return value.toLowerCase();
+
+  const staffId = normalizeStaffId(value);
+  if (!staffId) return null;
+
   const adminClient = createAdminClient();
-  const { data: admins } = await withTimeout(
+  const { data: profile, error } = await withTimeout(
     adminClient
-    .from("profiles")
-    .select("id")
-    .in("role", ["admin", "secretary"])
-      .eq("status", "active"),
-    "Admin notification recipient lookup",
-  ).catch(() => ({ data: null }));
+      .from("profiles")
+      .select("email,status")
+      .eq("staff_id", staffId)
+      .maybeSingle(),
+    "Staff ID login lookup",
+  ).catch((error: unknown) => ({ data: null, error }));
 
-  if (!admins?.length) return;
+  if (error || !profile) return null;
+  return profile.email;
+}
 
-  await withTimeout(adminClient.from("notifications").insert(
-    admins.map((admin) => ({
-      user_id: admin.id,
-      kind: "approval_pending",
-      title: "New member registration",
-      body: `${member.fullName} (${member.email}) is waiting for approval.`,
-    })),
-  ), "Admin registration notification insert").catch(() => null);
+function normalizeStaffId(staffId: string) {
+  const normalized = staffId.trim().replace(/\s+/g, "").toUpperCase();
+  return normalized.startsWith("NAUB") ? normalized : `NAUB-${normalized}`;
+}
+
+function internalStaffEmail(staffId: string) {
+  return `${staffId.toLowerCase()}@${STAFF_AUTH_DOMAIN}`;
 }

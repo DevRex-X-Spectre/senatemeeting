@@ -7,7 +7,7 @@ import { mapSupabaseError, SUPABASE_AUTH_TIMEOUT_MS, withTimeout } from "@/lib/s
 import type { Profile } from "@/types/domain";
 
 const PROFILE_COLUMNS =
-  "id,email,full_name,role,status,title,avatar_url,approved_by,approved_at,created_at,updated_at";
+  "id,email,staff_id,full_name,role,status,title,avatar_url,approved_by,approved_at,created_at,updated_at";
 
 export const getCurrentUserAndProfile = cache(async (): Promise<{ userId: string; profile: Profile } | null> => {
   const supabase = await createClient();

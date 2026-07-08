@@ -95,7 +95,7 @@ export async function getAdminDashboard(): Promise<{
   ] = await Promise.all([
       withTimeout(supabase.from("meetings").select("id", { count: "exact", head: true }).not("status", "eq", "cancelled"), "Total meetings count"),
       withTimeout(supabase.from("profiles").select("id", { count: "exact", head: true }).eq("status", "active"), "Active members count"),
-      withTimeout(supabase.from("profiles").select("id", { count: "exact", head: true }).eq("status", "pending"), "Pending registrations count"),
+      withTimeout(supabase.from("profiles").select("id", { count: "exact", head: true }).eq("status", "pending"), "Pending legacy accounts count"),
       withTimeout(
         supabase
           .from("meetings")
@@ -109,7 +109,7 @@ export async function getAdminDashboard(): Promise<{
 
   if (totalMeetingsError) throwFriendlyError(totalMeetingsError, "Could not load meeting count.");
   if (activeMembersError) throwFriendlyError(activeMembersError, "Could not load member count.");
-  if (pendingRegistrationsError) throwFriendlyError(pendingRegistrationsError, "Could not load pending registrations.");
+  if (pendingRegistrationsError) throwFriendlyError(pendingRegistrationsError, "Could not load pending legacy accounts.");
   if (meetingsError) throwFriendlyError(meetingsError, "Could not load recent meetings.");
 
   const { data: attendanceCounts, error: attendanceError } = await withTimeout(

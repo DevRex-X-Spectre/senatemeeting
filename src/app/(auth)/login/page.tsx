@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { loginAction } from "@/lib/auth/actions";
-import { Card, CardContent, CardFooter, Button, Input } from "@/components/ui";
-import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
+import { Card, CardContent, Button, Input } from "@/components/ui";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -38,7 +38,7 @@ export default function LoginPage() {
             Welcome back
           </h1>
           <p className="text-[16px] leading-[1.5] text-steel">
-            Sign in to continue to UniSenate.
+            Members use their staff ID. The VC can continue with email.
           </p>
         </div>
       </div>
@@ -47,13 +47,13 @@ export default function LoginPage() {
         <CardContent>
           <form action={formAction} className="flex flex-col gap-4">
             <Input
-              label="Email address"
-              name="email"
-              type="email"
-              placeholder="you@university.edu"
-              autoComplete="email"
+              label="Staff ID or VC email"
+              name="identifier"
+              type="text"
+              placeholder="NAUB-001 or admin@gmail.com"
+              autoComplete="username"
               required
-              error={state?.errors?.email?.[0]}
+              error={state?.errors?.identifier?.[0]}
             />
             <Input
               label="Password"
@@ -65,8 +65,8 @@ export default function LoginPage() {
               error={state?.errors?.password?.[0]}
             />
 
-            {state?.errors?.email?.[0] ? (
-              <p className="text-[14px] leading-[1.43] text-danger">{state.errors.email[0]}</p>
+            {state?.errors?.identifier?.[0] ? (
+              <p className="text-[14px] leading-[1.43] text-danger">{state.errors.identifier[0]}</p>
             ) : null}
 
             <div className="mt-1">
@@ -74,15 +74,6 @@ export default function LoginPage() {
             </div>
           </form>
         </CardContent>
-
-        <CardFooter className="flex-col !gap-1 pt-0 text-center">
-          <p className="text-[14px] leading-[1.43] text-steel">
-            Need an account?{" "}
-            <Link href="/register" className="inline-flex items-center gap-1 font-medium text-graphite hover:underline">
-              Register here <ArrowRight className="size-3.5" />
-            </Link>
-          </p>
-        </CardFooter>
       </Card>
     </>
   );

@@ -11,11 +11,15 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: {
-    default: "UniSenate",
-    template: "%s · UniSenate",
+    default: "NaubSenate",
+    template: "%s · NaubSenate",
   },
   description:
-    "Manage university senate meetings around published agenda checklists, VC progress tracking, and official records.",
+    "Manage Nigerian Army University Biu senate meetings around published agenda checklists, VC progress tracking, and official records.",
+  icons: {
+    icon: "/naub-logo.png",
+    apple: "/naub-logo.png",
+  },
 };
 
 export default function RootLayout({

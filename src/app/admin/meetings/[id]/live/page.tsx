@@ -6,7 +6,7 @@ import { LiveAdminClient } from "./LiveAdminClient";
 import type { AgendaItem, Meeting, QuorumSnapshot } from "@/types/domain";
 
 export const metadata: Metadata = {
-  title: "Live agenda controls | UniSenate",
+  title: "Live agenda controls | NaubSenate",
 };
 
 type MotionWithPeople = Awaited<ReturnType<typeof getMotionsForMeeting>>[number];

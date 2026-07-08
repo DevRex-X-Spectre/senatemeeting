@@ -55,16 +55,16 @@ export default async function AdminDashboardPage() {
               </span>
               <div>
                 <p className="text-[14px] font-medium text-graphite">
-                  {stats.pendingRegistrations} member registration{stats.pendingRegistrations === 1 ? "" : "s"} awaiting approval
+                  {stats.pendingRegistrations} pending legacy account{stats.pendingRegistrations === 1 ? "" : "s"} awaiting review
                 </p>
                 <p className="text-[14px] leading-[1.43] text-steel">
-                  Review new accounts from the members dashboard.
+                  Review legacy pending accounts from the members dashboard.
                 </p>
               </div>
             </div>
             <Link href="/admin/members" className="w-full sm:w-auto">
               <Button variant="primary" size="sm" className="w-full gap-1.5 sm:w-auto">
-                Review registrations <ArrowRight className="size-4" />
+                Review accounts <ArrowRight className="size-4" />
               </Button>
             </Link>
           </CardContent>

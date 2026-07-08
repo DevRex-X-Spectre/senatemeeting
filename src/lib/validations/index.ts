@@ -1,5 +1,15 @@
-export { loginSchema, registerSchema, updateProfileSchema } from "./auth";
-export type { LoginInput, RegisterInput, UpdateProfileInput } from "./auth";
+export {
+  changePasswordSchema,
+  createMemberCredentialsSchema,
+  loginSchema,
+  updateProfileSchema,
+} from "./auth";
+export type {
+  ChangePasswordInput,
+  CreateMemberCredentialsInput,
+  LoginInput,
+  UpdateProfileInput,
+} from "./auth";
 
 export { createMeetingSchema, updateMeetingSchema, carryOverSchema } from "./meeting";
 export type { CreateMeetingInput, UpdateMeetingInput, CarryOverInput } from "./meeting";

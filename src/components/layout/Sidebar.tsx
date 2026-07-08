@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AppLogo } from "./AppLogo";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -41,18 +42,16 @@ export function Sidebar({ profile }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 hidden h-full w-60 flex-col border-r border-fog-border bg-pure-white sm:flex",
+        "fixed left-0 top-0 z-40 hidden h-full w-60 flex-col border-r border-signal-blue/20 bg-graphite text-pure-white sm:flex",
       )}
       aria-label="Navigation"
     >
-        <div className="flex h-20 items-center gap-3 border-b border-fog-border px-5 shrink-0">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-graphite bg-graphite text-pure-white">
-            <University className="size-4" />
-          </div>
+        <div className="flex h-20 items-center gap-3 border-b border-signal-blue/20 px-5 shrink-0">
+          <AppLogo className="size-10 border border-pure-white/70" priority />
           <div className="flex flex-col leading-tight">
-            <span className="text-[17px] font-bold tracking-[-0.025em] text-graphite">UniSenate</span>
-            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-steel">
-              Senate operations
+            <span className="text-[17px] font-bold tracking-[-0.025em] text-pure-white">NaubSenate</span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-pure-white/65">
+              NAUB operations
             </span>
           </div>
         </div>
@@ -69,8 +68,8 @@ export function Sidebar({ profile }: SidebarProps) {
                     className={cn(
                       "group flex items-center gap-3 rounded-md px-3 py-2.5 text-[14px] font-medium transition-colors duration-150",
                       active
-                        ? "bg-plaster text-graphite border border-fog-border"
-                        : "text-steel hover:bg-plaster hover:text-graphite",
+                        ? "border border-signal-blue bg-signal-blue text-pure-white"
+                        : "text-fog hover:bg-charcoal hover:text-pure-white",
                     )}
                     aria-current={active ? "page" : undefined}
                   >

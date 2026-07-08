@@ -3,6 +3,7 @@ import { requireActiveMember } from "@/lib/auth/guards";
 import { getRoleLabel } from "@/lib/auth/permissions";
 import { Card, CardContent, CardHeader, CardTitle, Badge, Avatar } from "@/components/ui";
 import { ProfileForm } from "@/components/auth/ProfileForm";
+import { PasswordChangeForm } from "@/components/auth/PasswordChangeForm";
 
 export const metadata: Metadata = { title: "Profile" };
 
@@ -25,7 +26,9 @@ export default async function ProfilePage() {
           <Avatar name={profile.full_name} src={profile.avatar_url} size="lg" />
           <div className="flex flex-col gap-1">
             <p className="text-[16px] font-semibold text-graphite">{profile.full_name}</p>
-            <p className="text-[14px] leading-[1.43] text-steel">{profile.email}</p>
+            <p className="text-[14px] leading-[1.43] text-steel">
+              {profile.staff_id ? `Staff ID: ${profile.staff_id}` : profile.email}
+            </p>
             <Badge
               tone={profile.role === "admin" || profile.role === "secretary" ? "info" : "neutral"}
               className="mt-1 w-fit capitalize"
@@ -42,6 +45,15 @@ export default async function ProfilePage() {
         </CardHeader>
         <CardContent>
           <ProfileForm profile={profile} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Change password</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PasswordChangeForm />
         </CardContent>
       </Card>
     </div>
